@@ -1,0 +1,14 @@
+HistoryId: NCID_1_98202389_130.14.18.97_5555_1505736232_3486030469_0MetA0_S_HStore
+QueryKey: 5
+ReleaseType: RefSeq
+FileType: genomic.fna.gz
+Flat: true
+
+Query title: Search txid216816[Organism:exp] AND latest[filter] AND all[filter] NOT anomalous[filter]  Sort by: SORTORDER
+Search results count: 90
+Filtered out 1 entries that do not have the requested ReleaseType, or are suppressed.
+Entries to download: 89
+
+genomic.fna.gz files in archive: 89
+Total size (bytes): 65344028
+Total time: 52.6 seconds
