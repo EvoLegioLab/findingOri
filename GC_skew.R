@@ -59,7 +59,7 @@ countgc<-function(seqfile, seqpos){
   gccount<-list(cC=unlist(cC,recursive=TRUE), cG=unlist(cG, recursive=TRUE), gc=unlist(G_C,recursive=TRUE),xpos=unlist(x, recursive = TRUE))
 }
 #--------------------------------------GC3 positions and figure------------------------------------
-threes<-function(mydata, myannot){
+threes<-function(mySeq, mydata, myannot){
   tempposit<-list()
   tempcod<-list()
   positcod<-list()
@@ -73,28 +73,29 @@ threes<-function(mydata, myannot){
   #it returns the 3rd nucleotides and their positions for both strands
   for (i in 1:length(mydata)){
     if (names(mydata[i])==names(myannot[i])){
-      mydna<-getSequence(mydata[[i]])
-      seqpos<-c(myannot[[i]][1]:myannot[[i]][2])
       #print(length(seqpos))
       #getting third nucleotides from sequence on the +1 strand
       if (myannot[[i]][3]==1){
-        #with the foor loop code takes forever and has not looked right
-        #for (j in 1:(length(mydna)/3)){
-         # positcod<-c(positcod,mydna[3*j]) 
-        #Setting the positions of the nucleotides to another list
-          #codonseqpos<-c(codonseqpos,seqpos[3*j])
-          #print(length(positcod));print(length(codonseqpos))
         #with this code has worked before
-        positcod<-c(positcod,mydna[seq(3,length(mydna),3)])
+        myposdna<-getSequence(mydata[[i]])
+        positcod<-c(positcod,myposdna[seq(3,length(myposdna),3)])
+        #Setting the positions of the nucleotides to another list
+        seqpos<-c(myannot[[i]][1]:myannot[[i]][2])
         codonseqpos<-c(codonseqpos,seqpos[seq(3,length(seqpos),3)])
         #}
       } else {
         #Getting third nucleotides from sequence on the -1 strand
-        #for (j in 1:(length(mydna)/3)){
-        #  negcod<-c(negcod,mydna[3*j])
-        #  codonseqpos_neg<-c(codonseqpos_neg,seqpos[3*j])
-        negcod<-c(negcod,mydna[seq(3,length(mydna),3)])
-        codonseqpos_neg<-c(codonseqpos_neg,seqpos[seq(3,length(seqpos),3)])
+        #IF prodigal positions are to be corrected by strand, then the commented out lines should be run (but doesn't work/look right)
+        #totlen<-length(getSequence(mySeq[[1]]))
+        mydna<-getSequence(mydata[[i]])
+        #seqpos<-sort(c((totlen-myannot[[i]][2]):(totlen-myannot[[i]][1])))
+        seqpos<-c(myannot[[i]][1]:myannot[[i]][2])
+        #mydna=rev(comp(mydna))
+        #taking the complement of the nucleotides to work with one strand only
+        mydna=comp(mydna)
+        #taking the first and the 4th and so on, since genes from this strand to be read in reverse
+        positcod<-c(positcod,mydna[seq(1,length(mydna),3)])
+        codonseqpos<-c(codonseqpos,seqpos[seq(1,length(seqpos),3)])
         #}
       }
       #If names do not match
@@ -105,9 +106,9 @@ threes<-function(mydata, myannot){
   #print(head(positcod))
   positcod<-unlist(positcod,recursive=TRUE)
   codonseqpos<-unlist(codonseqpos, recursive=TRUE)
-  negcod<-unlist(negcod, recursive = TRUE)
-  codonseqpos_neg<-unlist(codonseqpos_neg, recursive=TRUE)
-  thirds<-list(plusncl=positcod,pluspos=codonseqpos,minusncl=negcod)
+  #negcod<-unlist(negcod, recursive = TRUE)
+  #codonseqpos_neg<-unlist(codonseqpos_neg, recursive=TRUE)
+  thirds<-list(plusncl=positcod,pluspos=codonseqpos)#,minusncl=negcod, minuspos=codonseqpos_neg)
   #thirds<-list(plusncl=positcod,pluspos=codonseqpos)
   return(thirds)
 }
@@ -122,11 +123,16 @@ gccount$cumgc<-cumsum(gccount$gc)
 plot(gccount$xpos, gccount$cumgc, type='l')
 #-------------gc3-------------
 system('prodigal -i myFasta.fasta -o myGenCoord.fasta -d myGenSeqs.fasta')
-mygenseq<-read.fasta('myGenSeqs.fasta')
+mygenseq<-read.fasta('myGenSeqs.f')
 myAnnot<-sapply(mygenseq,function(x) strsplit(getAnnot(x),'#'))
 annotinfo<- lapply(lapply(myAnnot,'[', 1:4),function(x) as.integer(x[2:4]))
-thirds<-threes(mygenseq,annotinfo)
+thirds<-threes(mySeq,mygenseq,annotinfo)
 gc3s<-countgc(thirds$plusncl, thirds$pluspos)
+#sort3s<-list(ncl=thirds$plusncl[sort.list(thirds$pluspos)],xpos=sort(thirds$pluspos))
+#gc3s<-countgc(sort3s$ncl, sort3s$xpos)
+#gc3neg<-countgc(thirds$minusncl, thirds$minuspos)
 gc3s$cumgc<-cumsum(gc3s$gc)
+#gc3neg$cumgc<-cumsum(gc3neg$gc)
 plot(gc3s$xpos, gc3s$cumgc, type='l')
+#plot(gc3neg$xpos, gc3neg$cumgc, type='l')
 #}
