@@ -64,7 +64,7 @@ get_expected <- function(kmer, chunk_comp1, window_factor) {
 }
 
 #Calculate and plot metrics in sliding (overlapping) windows:
-slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, accession, oligo)
+slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, accession, oligo, top_kmers)
 {
   #windowsize = length of window to be used in the main analysis
   #find_kmers_wind = length of window when identifying most frequent kmers
@@ -72,9 +72,9 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
   #inputseq = chromosomal sequence to be analyzed
   #accession = name of the sequence, to be printed in the title of the plot
   #oligo = length of kmer
+  #top_kmers = How many of the most frequent kmers in each window should be included?
   seq_length <- length(inputseq)
   oct_per_wind <- find_kmers_wind-oligo+1 #number of kmers in each window in the first step
-  top_kmers = 50 #How many of the most frequent kmers in each window should be included?
   starts <- seq(1, seq_length, by = find_kmers_wind) #For stepping through the chromosome the first time (no overlaps between windows)
   n <- length(starts) 
   kmer_vec <- numeric(n*top_kmers) #Store selected kmers in this vector
@@ -93,9 +93,10 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
     }
     chunk_comp1 <- count(chunk,1) #Count number of each nucleotide in the window
     chunk_comp8 <- count(chunk,oligo) #Count all kmers in the window
+    chunk_comp8_len <- length(chunk_comp8)
     #Calculate the expected number of each kmer based on nucleotide composition:
-    expected_comp8 <- numeric(length(chunk_comp8))
-    for (ii in 1:length(chunk_comp8)) {
+    expected_comp8 <- numeric(chunk_comp8_len)
+    for (ii in 1:chunk_comp8_len) {
       expected_comp8[ii] <- get_expected(names(chunk_comp8[ii]), chunk_comp1, oct_per_wind)
     }
     #Take the difference between observed and expected counts of each kmer:
@@ -135,13 +136,13 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
   G_w = chunk_comp1[3]
   k = 1
   index_vec = numeric(tot)
-  for (j in 1:length(chunk_comp8)){ 
+  for (j in 1:chunk_comp8_len){ 
     #Go through all kmers from count() to search for the selected kmers
     #Since the kmers come in the same order in both cases, the search becomes easier
     #(The kmers_found is sorted alphabetically and the output from count() comes in alphabetical order)
     if (names(chunk_comp8[j])==kmers_found[k]) {
       kmer_not_cum[k,1] <- chunk_comp8[j] #Save the count of this kmer
-      index_vec[k] = j #Save the index of each kmer in the output from count()
+      index_vec[k] = j #Save the chunk_comp8-index of each kmer
       k = k+1
     }
     if (k>tot){ #When all selected kmers are found
@@ -206,6 +207,8 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
       kmer_not_cum[j,i] <- abs(kmer_not_cum[j,i] - chunk_comp8[jj])
     }
   }
+  
+  #### For plotting ####
   window_mid <- starts + (window_half) #Window mid-points as X-axis of plot
   title <- paste("Kmer:", oligo, "/File:", accession, "/Window:", windowsize, "/Tot length:", seq_length, sep = " ")
   scaled_gc <- 1000*cum_gc_vec + 1000 #So that it's visible in the plot (update these numbers so that it fits the chromosome!)
@@ -217,6 +220,8 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
   lines(window_mid, scaled_diff_gc_vec, type = "l", col = "red")
   lines(window_mid, tot_change, type = "l", col = "green")
 }
+
+#***************************** Test different values of the parameters below ****************************
 
 ##### Import DNA sequence in one of three possible ways: ###############
 
@@ -238,10 +243,11 @@ oligo = 8 #Length of kmer
 window <- ceiling(length(dna_seq)*0.2) #Windowsize = 20 % of sequence length
 step <- ceiling(window*0.1) #Steplength = 10 % of windowsize
 find_kmers_wind <- ceiling(length(dna_seq)*0.1) #Window to use when selecting kmers
+top_kmers = 50 #How many of the most frequent kmers in each window should be included?
 seq_name <- strsplit(fasta_name, "/", fixed=TRUE)
 seq_name <- strsplit(unlist(seq_name)[2], ".", fixed = TRUE)
 seq_name <- unlist(seq_name)[1]
-slidingwindowplot(window, find_kmers_wind, step, dna_seq, seq_name, oligo)
+slidingwindowplot(window, find_kmers_wind, step, dna_seq, seq_name, oligo, top_kmers)
 
 
 
