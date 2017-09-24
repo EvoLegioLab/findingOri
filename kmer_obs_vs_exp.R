@@ -188,12 +188,12 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
     lines(window_mid, kmer_not_cum[m,], type = "l", col = "red")
   }
   lines(window_mid, kmer_max_diff, type = "l", col = "green")
-  
+  return(list(window_mid, kmer_not_cum, kmer_max_diff))
 }
 
 #***************************** Test different values of the parameters below ****************************
 
-##### Import DNA sequence in one of three possible ways: ###############
+##### Import DNA sequence in one of four possible ways: ###############
 
 #accession_nb <-("NC_004307")
 #dna_seq <- getncbiseq(accession_nb)
@@ -202,23 +202,28 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
 #write.dna(dna_bin, file="dna_temp.fasta", format = "fasta", append = FALSE)
 #fasta_name <- "dna_temp.fasta"
 
-fasta_name <- "fasta_files/BacillusSubtilisT30.fasta" #Change to your file name and path
+#fasta_name <- "fasta_files/BacillusSubtilisT30.fasta" #Change to your file name and path
 #fasta_name <- "fasta_files/BifidobacteriumLongum105A.fasta"
 #fasta_name <- "fasta_files/EColiBstrREL606.fasta"
 #fasta_name <- "fasta_files/ParvibaculumLavamentivoransDS1.fasta"
 #fasta_name <- "fasta_files/RickettsiaSlovaca13B.fasta"
-dna_temp <- read.fasta(fasta_name)
+# dna_temp <- read.fasta(fasta_name)
+# dna_seq <- getSequence(dna_temp[[1]])
+
+#4:
+source("readFasta.R")
+dna_temp <- readFasta()
+seq_name <- getName(dna_temp[[1]])
 dna_seq <- getSequence(dna_temp[[1]])
+
 oligo = 8 #Length of kmer
 window <- ceiling(length(dna_seq)*0.2) #Windowsize = 20 % of sequence length
 step <- ceiling(window*0.1) #Steplength = 10 % of windowsize
 find_kmers_wind <- ceiling(length(dna_seq)*0.2) #Window to use when selecting kmers
 top_kmers = 20 #How many of the most frequent kmers in each window should be included?
-seq_name <- strsplit(fasta_name, "/", fixed=TRUE)
-seq_name <- strsplit(unlist(seq_name)[2], ".", fixed = TRUE)
-seq_name <- unlist(seq_name)[1]
-slidingwindowplot(window, find_kmers_wind, step, dna_seq, seq_name, oligo, top_kmers)
+# seq_name <- strsplit(fasta_name, "/", fixed=TRUE)
+# seq_name <- strsplit(unlist(seq_name)[2], ".", fixed = TRUE)
+# seq_name <- unlist(seq_name)[1]
+seq_skews <- slidingwindowplot(window, find_kmers_wind, step, dna_seq, seq_name, oligo, top_kmers)
 
-
-
-
+return(seq_skews)
