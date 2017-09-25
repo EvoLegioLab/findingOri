@@ -134,7 +134,7 @@ ter<-gc3s$xpos[match(max(gc3s$cumgc),gc3s$cumgc)]
 ori<-gc3s$xpos[match(min(gc3s$cumgc),gc3s$cumgc)]
 cat('The origin is located at', ori ,' and the terminus at', ter)
 #---Counting genes------------------
-#getting positions on the leading strand
+#Functions
 simplegenecount<-function(annotations){
   lespos<-list()
   laspos<-list()
@@ -156,10 +156,12 @@ simplegenecount<-function(annotations){
   }
   genecounts<-list(lesc=lescount, lasc=lascount)
 }
+#------------Running gene counts-----------------
 genecount<-simplegenecount(annotinfo)
 genecount
 genebias<-(genecount$lesc/(genecount$lesc+genecount$lasc))*100
 cat(genebias, '% of genes are on the leading strand')
 #more elaborated try with windows and plotting
+
 
 
