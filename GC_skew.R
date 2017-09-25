@@ -108,7 +108,7 @@ threes<-function(mydata, myannot){
 ##-----------------RUnning with input--------------
 #GCskews<-function(accession){
 #change your accession code here
-accession<-"CP011051.1"
+accession<-"NZ_CM000488.1"
 mySeq<-getfastafiles(accession)
 #NOTE! Fasta used in the following calls MUST be in the variable mySeq!
 #------------GC-----------------
@@ -121,7 +121,7 @@ plot(gccount$xpos, gccount$cumta, type='l')
 #-------------gc3-------------
 #Running gene prediction with prodigal and gc3 counts for 3rd codon positions
 system('prodigal -i myFasta.fasta -o myGenCoord.fasta -d myGenSeqs.fasta')
-mygenseq<-read.fasta('myGenSeqs.f')
+mygenseq<-read.fasta('myGenSeqs.fasta')
 myAnnot<-sapply(mygenseq,function(x) strsplit(getAnnot(x),'#'))
 annotinfo<- lapply(lapply(myAnnot,'[', 1:4),function(x) as.integer(x[2:4]))
 thirds<-threes(mygenseq,annotinfo)
@@ -160,7 +160,7 @@ simplegenecount<-function(annotations){
 genecount<-simplegenecount(annotinfo)
 genecount
 genebias<-(genecount$lesc/(genecount$lesc+genecount$lasc))*100
-cat(genebias, '% of genes are on the leading strand')
+cat('\n', genebias, '% of genes are on the leading strand')
 #more elaborated try with windows and plotting
 
 
