@@ -108,8 +108,15 @@ threes<-function(mydata, myannot){
 ##-----------------RUnning with input--------------
 #GCskews<-function(accession){
 #change your accession code here
-accession<-"NZ_CM000488.1"
-mySeq<-getfastafiles(accession)
+# accession<-"NZ_CM000488.1"
+# mySeq<-getfastafiles(accession)
+
+#fetch FASTA file
+source("readFasta.R")
+myDNAbin<-readFasta()
+myFasta<-write.dna(myDNAbin,file ="myFasta.fasta", format = "fasta")
+mySeq<-read.fasta("myFasta.fasta")
+
 #NOTE! Fasta used in the following calls MUST be in the variable mySeq!
 #------------GC-----------------
 #Running gc counts on whole sequence
@@ -133,6 +140,7 @@ plot(gc3s$xpos,gc3s$cumta, type='l')
 ter<-gc3s$xpos[match(max(gc3s$cumgc),gc3s$cumgc)]
 ori<-gc3s$xpos[match(min(gc3s$cumgc),gc3s$cumgc)]
 cat('The origin is located at', ori ,' and the terminus at', ter)
+
 #---Counting genes------------------
 #Functions
 simplegenecount<-function(annotations){
@@ -163,5 +171,4 @@ genebias<-(genecount$lesc/(genecount$lesc+genecount$lasc))*100
 cat('\n', genebias, '% of genes are on the leading strand')
 #more elaborated try with windows and plotting
 
-
-
+return(gc3s)
