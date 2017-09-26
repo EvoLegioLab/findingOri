@@ -109,8 +109,21 @@ threes<-function(mydata, myannot){
 ##-----------------RUnning with input--------------
 #GCskews<-function(accession){
 #change your accession code here
-accession<-access
-mySeq<-getfastafiles(accession)
+if (exists(access)){
+  accession<-access
+  mySeq<-getfastafiles(accession)
+}
+#=======
+# accession<-"NZ_CM000488.1"
+# mySeq<-getfastafiles(accession)
+
+#fetch FASTA file
+if(exists(fi)){
+source("readFasta.R")
+myDNAbin<-readFasta()
+myFasta<-write.dna(myDNAbin,file ="myFasta.fasta", format = "fasta")
+mySeq<-read.fasta("myFasta.fasta")
+}
 #NOTE! Fasta used in the following calls MUST be in the variable mySeq!
 #------------GC-----------------
 #Running gc counts on whole sequence
@@ -138,6 +151,7 @@ if (verb=='n'){
 ter<-gc3s$xpos[match(max(gc3s$cumgc),gc3s$cumgc)]
 ori<-gc3s$xpos[match(min(gc3s$cumgc),gc3s$cumgc)]
 cat('The origin is located at', ori ,' and the terminus at', ter)
+
 #---Counting genes------------------
 #Functions
 simplegenecount<-function(annotations){
@@ -187,3 +201,7 @@ cumgenecount<-function(myannot){
 cumgenecount(annotinfo)
 }
 
+#=======
+
+#return(gc3s)
+#>>>>>>> 625533ef50e1370ccb00a1e094721bd9934c9acd
