@@ -15,6 +15,7 @@ getDNAbin<-function(mybinfile){
   mySeq<-read.fasta("myFasta.fasta")
   return(mySeq)
 }
+GCall<-function(access, verb){
 #-----------------------GC calculations (functions)----------------------------------------
 #Counting numbers of g and c per window
 #Input to countgc either a fasta file (for whole genome gc), pure sequence list or fasta list and sequence position list (for gc3) 
@@ -108,7 +109,7 @@ threes<-function(mydata, myannot){
 ##-----------------RUnning with input--------------
 #GCskews<-function(accession){
 #change your accession code here
-accession<-"NZ_CM000488.1"
+accession<-access
 mySeq<-getfastafiles(accession)
 #NOTE! Fasta used in the following calls MUST be in the variable mySeq!
 #------------GC-----------------
@@ -116,8 +117,10 @@ mySeq<-getfastafiles(accession)
 gccount<-countgc(mySeq)
 gccount$cumgc<-cumsum(gccount$gc)
 gccount$cumta<-cumsum(gccount$ta)
-plot(gccount$xpos, gccount$cumgc, type='l')
-plot(gccount$xpos, gccount$cumta, type='l')
+if (verb=='n'){
+  plot(gccount$xpos, gccount$cumgc, type='l')
+  plot(gccount$xpos, gccount$cumta, type='l')
+}
 #-------------gc3-------------
 #Running gene prediction with prodigal and gc3 counts for 3rd codon positions
 system('prodigal -i myFasta.fasta -o myGenCoord.fasta -d myGenSeqs.fasta')
@@ -128,8 +131,10 @@ thirds<-threes(mygenseq,annotinfo)
 gc3s<-countgc(thirds$plusncl, thirds$pluspos)
 gc3s$cumgc<-cumsum(gc3s$gc)
 gc3s$cumta<-cumsum(gc3s$ta)
-plot(gc3s$xpos, gc3s$cumgc, type='l')
-plot(gc3s$xpos,gc3s$cumta, type='l')
+if (verb=='n'){
+  plot(gc3s$xpos, gc3s$cumgc, type='l')
+  plot(gc3s$xpos,gc3s$cumta, type='l')
+}
 ter<-gc3s$xpos[match(max(gc3s$cumgc),gc3s$cumgc)]
 ori<-gc3s$xpos[match(min(gc3s$cumgc),gc3s$cumgc)]
 cat('The origin is located at', ori ,' and the terminus at', ter)
@@ -162,6 +167,23 @@ genecount
 genebias<-(genecount$lesc/(genecount$lesc+genecount$lasc))*100
 cat('\n', genebias, '% of genes are on the leading strand')
 #more elaborated try with windows and plotting
-
-
+cumgenecount<-function(myannot){
+  xpos<-list()
+  ypos<-list()
+  cumgene<-list()
+  for (i in 1:length(myannot)){
+    xpos[i]<-median(c(myannot[[i]][1]:myannot[[i]][2]))
+    ypos[i]<-myannot[[i]][3]
+  }
+  xpos<-unlist(xpos,recursive=TRUE)
+  ypos<-unlist(ypos, recursive=TRUE)
+  #print(head(xpos))
+  #print(head(ypos))
+  cumgene<-cumsum(ypos)
+  if (verb=='n'){
+    plot(xpos, cumgene, type='l')
+  }
+}
+cumgenecount(annotinfo)
+}
 
