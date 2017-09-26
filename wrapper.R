@@ -17,9 +17,8 @@ findingOri<-function(access, fi, verbose){
   #if(!exists(c("getfastafiles",'countgc', 'threes', 'simplegenecount', 'cumgenecount'), mode="function")){
   source('GC_skew.R')
   #mySeq<-getfastafiles(access)
-  #verb<-verb
-  GCall(access, verb)
-  #print(verb)
+  print(verb)
+  GCall(access,,verb)
  # }else{
   #  print('R code not available')
   #}

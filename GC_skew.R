@@ -15,7 +15,7 @@ getDNAbin<-function(mybinfile){
   mySeq<-read.fasta("myFasta.fasta")
   return(mySeq)
 }
-GCall<-function(access, verb){
+GCall<-function(access, fi, verb){
 #-----------------------GC calculations (functions)----------------------------------------
 #Counting numbers of g and c per window
 #Input to countgc either a fasta file (for whole genome gc), pure sequence list or fasta list and sequence position list (for gc3) 
@@ -109,20 +109,14 @@ threes<-function(mydata, myannot){
 ##-----------------RUnning with input--------------
 #GCskews<-function(accession){
 #change your accession code here
-if (exists(access)){
+if (missing(fi)){
   accession<-access
   mySeq<-getfastafiles(accession)
-}
-#=======
-# accession<-"NZ_CM000488.1"
-# mySeq<-getfastafiles(accession)
-
-#fetch FASTA file
-if(exists(fi)){
-source("readFasta.R")
-myDNAbin<-readFasta()
-myFasta<-write.dna(myDNAbin,file ="myFasta.fasta", format = "fasta")
-mySeq<-read.fasta("myFasta.fasta")
+}else{
+  source("readFasta.R")
+  myDNAbin<-readFasta()
+  myFasta<-write.dna(myDNAbin,file ="myFasta.fasta", format = "fasta")
+  mySeq<-read.fasta("myFasta.fasta")
 }
 #NOTE! Fasta used in the following calls MUST be in the variable mySeq!
 #------------GC-----------------
