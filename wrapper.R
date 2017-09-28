@@ -46,54 +46,35 @@ findingOri<-function(access, fi, verbose){
     for (i in bigstart:bigend){
       window<-list()
       #start<-bigstart
-      start<-1900000
-      counter<-0
+      start<-1
+      count<-0
       for (j in 1:4){
         #print(j)
         wingc<-list()
         wingc3<-list()
         wingene<-list()
-        filledwingc<-list()
-        filledwingc3<-list()
-        filledwingene<-list()
         start<-start
         stop<-start+smallwinlen
         #print(start)
         #print(stop)
         midpoint<-median(c(start:stop))
         #Calculating parameter values for each window
-        #print(which(output$gcxpos %in% c(start:stop)))
         wingc<-output$gc[which(output$gcxpos %in% c(start:stop))]
-        lengc<-length(wingc)
-        #print(lengc)
         wingc3<-output$gc3[which(output$gc3xpos %in% c(start:stop))]
-        lengc3<-length(wingc3)
-        #print(lengc3)
         wingene<-output$genebias[which(output$genexpos %in% c(start:stop))]
-        lengene<-length(wingene)
-        repeat_len<-max(c(lengc, lengc3, lengene))
-        #filling list to same lengths with filltable function (defined below)
-        filledwingc<-filltable(wingc)
-        filledwingc3<-filltable(wingc3)
-        filledwingene<-filltable(wingene)
-        #within each window
-        for (n in 1:repeat_len){
-          #print(counter+n)
-          #print(repeat_len)
-          window$gc[(counter+n)]<-filledwingc[n]
-          window$gc3[(counter+n)]<-filledwingc3[n]
-          #window$kmer[j]<-
-          window$gene[(counter+n)]<-filledwingene[n]
-          window$point[(counter+n)]<-paste('w',j)
-          window$position[(counter+n)]<-midpoint
-        }
-        counter<-counter+repeat_len
-        #print(counter)
+        #dividing each window to 10 to get n=10
+        window$gcav[(count+1):(count+10)]<-partaverages(wingc)
+        window$gc3av[(count+1):(count+10)]<-partaverages(wingc3)
+        window$geneav[(count+1):(count+10)]<-partaverages(wingene)
+        window$point[(count+1):(count+10)]<-paste('w',j)
+        #print(window$point)
+        count<-count+10
         #setting start for next small window
         start<-stop+1
-        #print(start)
       }
-      model<-manova(cbind(gc,gc3, gene)~point, data=window)
+        #window$position<-midpoint
+    }
+      model<-manova(cbind(gcav,gc3av, geneav)~point, data=window)
       model2<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 1', 'w 2'))
       model3<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 2', 'w 3'))
       model4<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 3', 'w 4'))
@@ -104,7 +85,7 @@ findingOri<-function(access, fi, verbose){
       summary4<-summary(model4, test='Wilks')
       summary5<-summary(model5, test='Wilks')
       #bigstart<-bigstart+bigstep
-    }
+    #}
    # 
   #}
   #
@@ -124,4 +105,20 @@ filltable<-function(mydata){
     mydata<-myfill
     }
     return(mydata)
+}
+partaverages<-function(mydata){
+  partav<-list()
+  len<-round(length(mydata)/10)
+  part_start<-1
+  part_stop<-len
+  #part<-0
+  for (i in 1:10){
+    #print(part_start)
+    #print(len)
+    partav[i]<-mean(mydata[part_start:part_stop])
+    part_start<-part_start+len
+    part_stop<-part_start+len-1
+  }
+  partav<-unlist(partav,recursive = TRUE)
+  return(partav)
 }
