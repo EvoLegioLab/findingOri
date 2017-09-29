@@ -314,7 +314,7 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
     lines(mid_points, tot_change, type = "p", col = "green")
     lines(pos_interpolated,tot_change_interpolated, type = "l", col = "red")
   }
-  return(list(mid_points, cum_gc_vec, tot_change, pos_interpolated, tot_change_interpolated))
+  return(list(xpos=mid_points, cumgc=cum_gc_vec, tot_change=tot_change, pos_interp=pos_interpolated, tot_change_inter=tot_change_interpolated))
 }
 
 #***************************** Test different values of the parameters below ****************************
@@ -357,5 +357,5 @@ gc_step <- 100L #Step length in the GC3 function
 #seq_name <- unlist(seq_name)[1]
 seq_skews <- slidingwindowplot(window, find_kmers_wind, step, dna_seq, seq_name, oligo, max_kmers, gc_step)
 
-#return(seq_skews)
+return(seq_skews)
 }

@@ -54,7 +54,7 @@ countgc<-function(seqfile, seqpos){
       end<-start+windowlen
     } else {
       #When we are at the last window (and it goes over the last nucleotide) we allow it to go to the beginning again
-      tabseq<-table(c(mydna[start:length(mydna)],seqfile[1:(end-length(mydna))]))
+      tabseq<-table(c(mydna[start:length(mydna)],mydna[1:(end-length(mydna))]))
       cC[i]<-tabseq[['c']]
       cG[i]<-tabseq[['g']]
       cA[i]<-tabseq[['a']]
@@ -106,6 +106,7 @@ threes<-function(mydata, myannot){
 }
 ##-----------------RUnning with input--------------
 mySeq<-mysequence
+#print(mySeq)
 #NOTE! Fasta used in the following calls MUST be in the variable mySeq!
 #------------GC-----------------
 #Running gc counts on whole sequence
@@ -118,7 +119,7 @@ if (verb=='n'){
 }
 ter<-gccount$xpos[match(max(gccount$cumgc),gccount$cumgc)]
 ori<-gccount$xpos[match(min(gccount$cumgc),gccount$cumgc)]
-cat('Based on gc, the origin is located at', ori ,' and the terminus at', ter)
+cat('Based on gc, the origin is located at', ori ,' and the terminus at', ter,'\n')
 #-------------gc3-------------
 #Running gene prediction with prodigal and gc3 counts for 3rd codon positions
 system('prodigal -i myFasta.fasta -o myGenCoord.fasta -d myGenSeqs.fasta')
@@ -164,7 +165,7 @@ simplegenecount<-function(annotations){
 genecount<-simplegenecount(annotinfo)
 #genecount
 genebias<-(genecount$lesc/(genecount$lesc+genecount$lasc))*100
-cat('\n', genebias, '% of genes are on the leading strand')
+cat('\n', genebias, '% of genes are on the leading strand\n')
 #more elaborated try with windows and plotting
 cumgenecount<-function(myannot){
   xpos<-list()
@@ -182,9 +183,15 @@ cumgenecount<-function(myannot){
   cumgenebias<-list(cumgene=cumgene, genes=ypos,xpos=xpos)
 }
 cumgenebias<-cumgenecount(annotinfo)
+geneter<-cumgenebias$xpos[match(max(cumgenebias$cumgene),cumgenebias$cumgene)]
+geneori<-cumgenebias$xpos[match(min(cumgenebias$cumgene), cumgenebias$cumgene)]
+cat('Based on genebias, the origin is located at', geneori ,' and the terminus at', geneter, '\n')
 if (verb=='n'){
   plot(cumgenebias$xpos, cumgenebias$cumgene, type='l')
 }
+rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos,gcori=ori, gc3ori=gc3ori, gcter=ter, gc3ter=gc3ter, geneori=geneori, geneter=geneter)
+return(rawoutput)
+print(head(rawoutput))
 }
 
 #=======
