@@ -4,7 +4,7 @@
 #source("http://bioconductor.org/biocLite.R")
 #biocLite()
 #install.packages("seqinr")
-require(seqinr)
+#require(seqinr)
 
 
 # read seqinr test file ---------------------------------------------------

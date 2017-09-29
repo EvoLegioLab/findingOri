@@ -1,5 +1,3 @@
-require(seqinr)
-require(ape)
 #Calculating GC skew from whole genome and genomic 3rd codon positions. 
 #NOTE! Prodigal MUST be installed on the computer and working through bash!
 #-----------------------------Import data-------------------------------------
@@ -15,7 +13,7 @@ getDNAbin<-function(mybinfile){
   mySeq<-read.fasta("myFasta.fasta")
   return(mySeq)
 }
-GCall<-function(access, fi, verb){
+GCall<-function(mysequence,verb){
 #-----------------------GC calculations (functions)----------------------------------------
 #Counting numbers of g and c per window
 #Input to countgc either a fasta file (for whole genome gc), pure sequence list or fasta list and sequence position list (for gc3) 
@@ -107,17 +105,7 @@ threes<-function(mydata, myannot){
   return(thirds)
 }
 ##-----------------RUnning with input--------------
-#GCskews<-function(accession){
-#change your accession code here
-if (missing(fi)){
-  accession<-access
-  mySeq<-getfastafiles(accession)
-}else{
-  source("readFasta.R")
-  myDNAbin<-readFasta()
-  myFasta<-write.dna(myDNAbin,file ="myFasta.fasta", format = "fasta")
-  mySeq<-read.fasta("myFasta.fasta")
-}
+mySeq<-mysequence
 #NOTE! Fasta used in the following calls MUST be in the variable mySeq!
 #------------GC-----------------
 #Running gc counts on whole sequence
@@ -128,6 +116,9 @@ if (verb=='n'){
   plot(gccount$xpos, gccount$cumgc, type='l')
   plot(gccount$xpos, gccount$cumta, type='l')
 }
+ter<-gccount$xpos[match(max(gccount$cumgc),gccount$cumgc)]
+ori<-gccount$xpos[match(min(gccount$cumgc),gccount$cumgc)]
+cat('Based on gc, the origin is located at', ori ,' and the terminus at', ter)
 #-------------gc3-------------
 #Running gene prediction with prodigal and gc3 counts for 3rd codon positions
 system('prodigal -i myFasta.fasta -o myGenCoord.fasta -d myGenSeqs.fasta')
@@ -142,9 +133,9 @@ if (verb=='n'){
   plot(gc3s$xpos, gc3s$cumgc, type='l')
   plot(gc3s$xpos,gc3s$cumta, type='l')
 }
-ter<-gc3s$xpos[match(max(gc3s$cumgc),gc3s$cumgc)]
-ori<-gc3s$xpos[match(min(gc3s$cumgc),gc3s$cumgc)]
-cat('The origin is located at', ori ,' and the terminus at', ter)
+gc3ter<-gc3s$xpos[match(max(gc3s$cumgc),gc3s$cumgc)]
+gc3ori<-gc3s$xpos[match(min(gc3s$cumgc),gc3s$cumgc)]
+cat('Based on gc3, the origin is located at', gc3ori ,' and the terminus at', gc3ter)
 
 #---Counting genes------------------
 #Functions
@@ -154,11 +145,11 @@ simplegenecount<-function(annotations){
   lescount<-0
   lascount<-0
   if(ori<ter){
-    lespos<-c(ori:ter)
-    laspos<-c(ter:length(mySeq), 1:ori)
+    lespos<-c(gc3ori:gc3ter)
+    laspos<-c(gc3ter:length(mySeq), 1:gc3ori)
   }else{
-    lespos<-c(ori:length(mySeq), 1:ter)
-    laspos<-c(ter:ori)
+    lespos<-c(gc3ori:length(mySeq), 1:gc3ter)
+    laspos<-c(gc3ter:gc3ori)
   }
   for (i in 1:length(annotations)){
     if(annotations[[i]][2] %in% lespos){

@@ -1,28 +1,51 @@
 #Just starting to create the wrapper. Need to change plotting in both GC skew and k-mer so that it is optional.
 #Also need to link file fetching here, and then just input that to sources
 findingOri<-function(access, fi, verbose){
-  if (missing(access)){
-    cat ('calling', fi)
-  }else if(missing(fi)){
+  require(seqinr)
+  require(ape)
+  require(stringr)
+  require(pracma)
+  #------------------Calling with file selection
+  if (missing(fi)==!TRUE){
+    #cat ('calling', fi)
+    #fi<-fi
+    if (missing(verbose)){
+      print ('figures will be produced!')
+      verb<-'n'
+    } else {
+      print('no figures will be produced!')
+      verb<-'y'
+    }
+    source("readFasta.R")
+    myDNAbin<-readFasta()
+    myFasta<-write.dna(myDNAbin,file ="myFasta.fasta", format = "fasta")
+    mySeq<-read.fasta("myFasta.fasta")
+    source('GC_skew.R')
+    source('kmer_both_strands_updated.R')
+    GCall(mySeq,verb)
+    kmers(mySeq, verb)
+    #----------------Calling with accecssion number
+    } else if (missing(access)==!TRUE){
     cat ('reading in fasta from accession number', access)
     access<-access
-  }
-  if (missing(verbose)){
-    print ('figures will be produced!')
-    verb<-'n'
-  } else {
-    print('no figures will be produced!')
-    verb<-'y'
-  }
-  #if(!exists(c("getfastafiles",'countgc', 'threes', 'simplegenecount', 'cumgenecount'), mode="function")){
-  source('GC_skew.R')
-  #mySeq<-getfastafiles(access)
-  #print(verb)
-  GCall(access, ,verb)
- # }else{
-  #  print('R code not available')
-  #}
-#-----------------Output from scripts and modelling----------------
+      if (missing(verbose)){
+      print ('figures will be produced!')
+      verb<-'n'
+      } else {
+      print('no figures will be produced!')
+      verb<-'y'
+      }
+    source('GC_skew.R')
+    source('kmer_both_strands_updated.R')
+    mySeq<-getfastafiles(accession)
+    GCall(mySeq,verb)
+    kmers(mySeq,verb)
+    } else {
+    cat('Call findingOri with at least one of the following ways:\n findingOri(accessnumber)\n or findingOri(,fastafile)\n add call to verbose for faster calculations without figures \n on the third parameter position in the function call')
+    stop()
+    }
+}
+#-----------------Output from scripts and modelling, TRIALS WITH MANOVA! NOT IN USE IN THE LAST VERSION----------------
   #output<-list(gc=gccount$cumgc,gc3=gc3s$cumgc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$cumgene,genexpos=cumgenebias$xpos)#,kmer=...kmerxpos...)
   output<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos)
   genelen<-list()
@@ -43,7 +66,7 @@ findingOri<-function(access, fi, verbose){
   bigend<-bigstart+bigwin
   bigstep<-0.2*bigwin
   #for (k in 1:length(getSequence(mySeq[1]))){
-    for (i in bigstart:bigend){
+    #for (i in bigstart:bigend){
       window<-list()
       #start<-bigstart
       start<-1
@@ -73,17 +96,17 @@ findingOri<-function(access, fi, verbose){
         start<-stop+1
       }
         #window$position<-midpoint
-    }
-      model<-manova(cbind(gcav,gc3av, geneav)~point, data=window)
-      model2<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 1', 'w 2'))
-      model3<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 2', 'w 3'))
-      model4<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 3', 'w 4'))
-      model5<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 1', 'w 4'))
-      summary<-summary(model, test='Wilks')
-      summary2<-summary(model2, test='Wilks')
-      summary3<-summary(model3, test='Wilks')
-      summary4<-summary(model4, test='Wilks')
-      summary5<-summary(model5, test='Wilks')
+    #}
+      #model<-manova(cbind(gcav,gc3av, geneav)~point, data=window)
+      #model2<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 1', 'w 2'))
+      #model3<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 2', 'w 3'))
+      #model4<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 3', 'w 4'))
+      #model5<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 1', 'w 4'))
+      #summary<-summary(model, test='Wilks')
+      #summary2<-summary(model2, test='Wilks')
+      #summary3<-summary(model3, test='Wilks')
+      #summary4<-summary(model4, test='Wilks')
+      #summary5<-summary(model5, test='Wilks')
       #bigstart<-bigstart+bigstep
     #}
    # 
@@ -91,8 +114,8 @@ findingOri<-function(access, fi, verbose){
   #
   #
   #summary$stats...
-  print(summary)
-}
+  #print(summary)
+#}
 filltable<-function(mydata){
   myfill<-list()
   #filling shorter variable lists to same length in a list

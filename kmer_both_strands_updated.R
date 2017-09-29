@@ -12,11 +12,11 @@
 
 
 #Required packages: seqinr, stringr, ape, pracma
-require("seqinr")
-require("stringr")
-require("ape")
-require("pracma")
-
+#require("seqinr")
+#require("stringr")
+#require("ape")
+#require("pracma")
+kmers<-function(mydna, verb){
 #Download sequence from database. Function from Little book of R for bioinf
 getncbiseq <- function(accession) 
 {
@@ -309,9 +309,11 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
   scaled_gc <- scaling_factor*cum_gc_vec + shifting_const #So that it's visible in the plot
   min_y = min(c(min(scaled_gc), min(tot_change)))
   max_y = max(c(max(scaled_gc), max(tot_change)))
-  plot(mid_points,scaled_gc,type="l", col="blue", main = title, xlab="Middle pos of each window",ylab="Blue=Scaled cum GCskew, Green=Sum(kmer change), Red=Interpol green", ylim=(c(min_y,max_y)))
-  lines(mid_points, tot_change, type = "p", col = "green")
-  lines(pos_interpolated,tot_change_interpolated, type = "l", col = "red")
+  if(verb=='n'){
+    plot(mid_points,scaled_gc,type="l", col="blue", main = title, xlab="Middle pos of each window",ylab="Blue=Scaled cum GCskew, Green=Sum(kmer change), Red=Interpol green", ylim=(c(min_y,max_y)))
+    lines(mid_points, tot_change, type = "p", col = "green")
+    lines(pos_interpolated,tot_change_interpolated, type = "l", col = "red")
+  }
   return(list(mid_points, cum_gc_vec, tot_change, pos_interpolated, tot_change_interpolated))
 }
 
@@ -338,8 +340,9 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
 #dna_seq <- getSequence(dna_temp[[1]])
 
 #4:
-source("readFasta.R")
-dna_temp <- readFasta()
+#source("readFasta.R")
+#dna_temp <- readFasta()
+dna_temp<-mydna
 seq_name <- getName(dna_temp[[1]])
 dna_seq <- getSequence(dna_temp[[1]])
 
@@ -354,4 +357,5 @@ gc_step <- 100L #Step length in the GC3 function
 #seq_name <- unlist(seq_name)[1]
 seq_skews <- slidingwindowplot(window, find_kmers_wind, step, dna_seq, seq_name, oligo, max_kmers, gc_step)
 
-return(seq_skews)
+#return(seq_skews)
+}
