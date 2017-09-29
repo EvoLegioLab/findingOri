@@ -17,20 +17,108 @@ findingOri<-function(access, fi, verbose){
   #if(!exists(c("getfastafiles",'countgc', 'threes', 'simplegenecount', 'cumgenecount'), mode="function")){
   source('GC_skew.R')
   #mySeq<-getfastafiles(access)
-  print(verb)
-  GCall(access,,verb)
+  #print(verb)
+  GCall(access, ,verb)
  # }else{
   #  print('R code not available')
   #}
-  
-  #output<-list(gc=...gc3=...gcxpos=...gc3xpos=...kmer=...kmerxpos...genebias=...genexpos=...)
-  #for (each big window){
-  #output$window<- set a bunch of sequence neighbourhoods to test, e.g. len=big window/10
-  #for (each small window){
-  #calculate variable averages per small window, minimum 1 observation/variable
+#-----------------Output from scripts and modelling----------------
+  #output<-list(gc=gccount$cumgc,gc3=gc3s$cumgc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$cumgene,genexpos=cumgenebias$xpos)#,kmer=...kmerxpos...)
+  output<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos)
+  genelen<-list()
+  smallwinlen<-list()
+  for (i in 1:length(annotinfo)){
+    genelen[i]<-list((annotinfo[[i]][2]-annotinfo[[i]][1]))
+  }
+  genelen<-unlist(genelen, recursive=TRUE)
+  if(2*max(genelen)>(0.02*length(getSequence(mySeq[[1]])))){
+    smallwinlen<-ceiling(2*max(genelen))
+  }else{
+    smallwinlen<-ceiling(0.02*length(getSequence(mySeq[[1]])))
+  }
+  #alternative
+  #smallwinlen<-ceiling(0.002*length(getSequence(mySeq[[1]])))
+  bigwin<-4*smallwinlen
+  bigstart<-1
+  bigend<-bigstart+bigwin
+  bigstep<-0.2*bigwin
+  #for (k in 1:length(getSequence(mySeq[1]))){
+    for (i in bigstart:bigend){
+      window<-list()
+      #start<-bigstart
+      start<-1
+      count<-0
+      for (j in 1:4){
+        #print(j)
+        wingc<-list()
+        wingc3<-list()
+        wingene<-list()
+        start<-start
+        stop<-start+smallwinlen
+        #print(start)
+        #print(stop)
+        midpoint<-median(c(start:stop))
+        #Calculating parameter values for each window
+        wingc<-output$gc[which(output$gcxpos %in% c(start:stop))]
+        wingc3<-output$gc3[which(output$gc3xpos %in% c(start:stop))]
+        wingene<-output$genebias[which(output$genexpos %in% c(start:stop))]
+        #dividing each window to 10 to get n=10
+        window$gcav[(count+1):(count+10)]<-partaverages(wingc)
+        window$gc3av[(count+1):(count+10)]<-partaverages(wingc3)
+        window$geneav[(count+1):(count+10)]<-partaverages(wingene)
+        window$point[(count+1):(count+10)]<-paste('w',j)
+        #print(window$point)
+        count<-count+10
+        #setting start for next small window
+        start<-stop+1
+      }
+        #window$position<-midpoint
+    }
+      model<-manova(cbind(gcav,gc3av, geneav)~point, data=window)
+      model2<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 1', 'w 2'))
+      model3<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 2', 'w 3'))
+      model4<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 3', 'w 4'))
+      model5<-manova(cbind(gc,gc3, gene)~point, data=window, subset=point %in% c('w 1', 'w 4'))
+      summary<-summary(model, test='Wilks')
+      summary2<-summary(model2, test='Wilks')
+      summary3<-summary(model3, test='Wilks')
+      summary4<-summary(model4, test='Wilks')
+      summary5<-summary(model5, test='Wilks')
+      #bigstart<-bigstart+bigstep
+    #}
+   # 
   #}
-  #}
-  #model<-manova(cbind(gc, gc3,kmer,genebias)~window, data=output)
-  #summary<-summary(model, test=c("Pillai", "Wilks", "Hotelling-Lawley", "Roy"))
+  #
+  #
   #summary$stats...
+  print(summary)
+}
+filltable<-function(mydata){
+  myfill<-list()
+  #filling shorter variable lists to same length in a list
+  if(length(mydata)<repeat_len){
+    fill<-vector('list',repeat_len-length(mydata))
+    fill<-sapply(fill, function(x) sample(mydata,1))
+    #print(fill)
+    myfill<-unlist(c(mydata,fill), recursive=TRUE)
+    #print(myfill)
+    mydata<-myfill
+    }
+    return(mydata)
+}
+partaverages<-function(mydata){
+  partav<-list()
+  len<-round(length(mydata)/10)
+  part_start<-1
+  part_stop<-len
+  #part<-0
+  for (i in 1:10){
+    #print(part_start)
+    #print(len)
+    partav[i]<-mean(mydata[part_start:part_stop])
+    part_start<-part_start+len
+    part_stop<-part_start+len-1
+  }
+  partav<-unlist(partav,recursive = TRUE)
+  return(partav)
 }

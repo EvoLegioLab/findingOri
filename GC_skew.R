@@ -41,7 +41,7 @@ countgc<-function(seqfile, seqpos){
   } else {
     xpos<-seqpos
   }
-  for (i in 1:(length(mydna)/step)){
+  for (i in 1:ceiling((length(mydna)/step))){
     #If window length does not go over the last nucleotides
     if (end <= length(mydna)){
       tabseq<-table(mydna[start:end])
@@ -171,7 +171,7 @@ simplegenecount<-function(annotations){
 }
 #------------Running gene counts-----------------
 genecount<-simplegenecount(annotinfo)
-genecount
+#genecount
 genebias<-(genecount$lesc/(genecount$lesc+genecount$lasc))*100
 cat('\n', genebias, '% of genes are on the leading strand')
 #more elaborated try with windows and plotting
@@ -188,11 +188,12 @@ cumgenecount<-function(myannot){
   #print(head(xpos))
   #print(head(ypos))
   cumgene<-cumsum(ypos)
-  if (verb=='n'){
-    plot(xpos, cumgene, type='l')
-  }
+  cumgenebias<-list(cumgene=cumgene, genes=ypos,xpos=xpos)
 }
-cumgenecount(annotinfo)
+cumgenebias<-cumgenecount(annotinfo)
+if (verb=='n'){
+  plot(cumgenebias$xpos, cumgenebias$cumgene, type='l')
+}
 }
 
 #=======
