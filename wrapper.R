@@ -114,6 +114,9 @@ findingOri<-function(access, fi, verbose){
       kmerori<-kmer1
     }
   }
+  #kmer output
+  cat('The position of the origin based on k-mer skew is at',kmerori)
+  cat('The position of the terminus based on k-mer skew is at',kmerter)
   #Simple statistics with all metrics 
   combOri<-c(oriout$gcori,oriout$gc3ori,kmerori, oriout$geneori)
   SEori<-sd(combOri)/sqrt(length(combOri))*1.96
