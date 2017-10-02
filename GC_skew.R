@@ -16,8 +16,8 @@ getDNAbin<-function(mybinfile){
 GCall<-function(mysequence,verb){
 #-----------------------GC calculations (functions)----------------------------------------
 #Counting numbers of g and c per window
-#Input to countgc either a fasta file (for whole genome gc), pure sequence list or fasta list and sequence position list (for gc3) 
-countgc<-function(seqfile, seqpos){
+#Input to countgc either a fasta file (for whole genome gc), pure sequence list or fasta list and sequence position list (for gc3)
+  countgc<-function(seqfile, seqpos){
   if (length(seqfile)==1){
     mydna<-getSequence(seqfile[[1]])
   }else{
@@ -110,19 +110,25 @@ mySeq<-mysequence
 #NOTE! Fasta used in the following calls MUST be in the variable mySeq!
 #------------GC-----------------
 #Running gc counts on whole sequence
+if (verb){cat("Running raw nucleotide statistics...")}
 gccount<-countgc(mySeq)
 gccount$cumgc<-cumsum(gccount$gc)
 gccount$cumta<-cumsum(gccount$ta)
-if (verb=='n'){
+if (verb){
   plot(gccount$xpos, gccount$cumgc, type='l')
   plot(gccount$xpos, gccount$cumta, type='l')
 }
 ter<-gccount$xpos[match(max(gccount$cumgc),gccount$cumgc)]
 ori<-gccount$xpos[match(min(gccount$cumgc),gccount$cumgc)]
+if (verb){cat("done!\n")}
 cat('Based on gc, the origin is located at', ori ,' and the terminus at', ter,'\n')
 #-------------gc3-------------
 #Running gene prediction with prodigal and gc3 counts for 3rd codon positions
-system('prodigal -i myFasta.fasta -o myGenCoord.fasta -d myGenSeqs.fasta')
+if (verb){cat("Running gene prediction...\n")
+system('prodigal -i myFasta.fasta -o myGenCoord.fasta -d myGenSeqs.fasta')}
+system('prodigal -q -i myFasta.fasta -o myGenCoord.fasta -d myGenSeqs.fasta')
+if (verb){cat("...gene prediction done!\n")
+cat("Running 3d codon position statistics...\n")}
 mygenseq<-read.fasta('myGenSeqs.fasta')
 myAnnot<-sapply(mygenseq,function(x) strsplit(getAnnot(x),'#'))
 annotinfo<- lapply(lapply(myAnnot,'[', 1:4),function(x) as.integer(x[2:4]))
@@ -130,13 +136,14 @@ thirds<-threes(mygenseq,annotinfo)
 gc3s<-countgc(thirds$plusncl, thirds$pluspos)
 gc3s$cumgc<-cumsum(gc3s$gc)
 gc3s$cumta<-cumsum(gc3s$ta)
-if (verb=='n'){
+if (verb){
   plot(gc3s$xpos, gc3s$cumgc, type='l')
   plot(gc3s$xpos,gc3s$cumta, type='l')
 }
 gc3ter<-gc3s$xpos[match(max(gc3s$cumgc),gc3s$cumgc)]
 gc3ori<-gc3s$xpos[match(min(gc3s$cumgc),gc3s$cumgc)]
-cat('Based on gc3, the origin is located at', gc3ori ,' and the terminus at', gc3ter)
+if (verb){cat("...3d codon position statistics done!\n")}
+cat('Based on gc3, the origin is located at', gc3ori ,' and the terminus at', gc3ter, "\n")
 
 #---Counting genes------------------
 #Functions
@@ -161,11 +168,14 @@ simplegenecount<-function(annotations){
   }
   genecounts<-list(lesc=lescount, lasc=lascount)
 }
+
 #------------Running gene counts-----------------
+if (verb){cat("Running gene statistics...\n")}
 genecount<-simplegenecount(annotinfo)
 #genecount
 genebias<-(genecount$lesc/(genecount$lesc+genecount$lasc))*100
-cat('\n', genebias, '% of genes are on the leading strand\n')
+cat(genebias, '% of genes are on the leading strand\n')
+
 #more elaborated try with windows and plotting
 cumgenecount<-function(myannot){
   xpos<-list()
@@ -182,19 +192,16 @@ cumgenecount<-function(myannot){
   cumgene<-cumsum(ypos)
   cumgenebias<-list(cumgene=cumgene, genes=ypos,xpos=xpos)
 }
+
 cumgenebias<-cumgenecount(annotinfo)
 geneter<-cumgenebias$xpos[match(max(cumgenebias$cumgene),cumgenebias$cumgene)]
 geneori<-cumgenebias$xpos[match(min(cumgenebias$cumgene), cumgenebias$cumgene)]
-cat('Based on genebias, the origin is located at', geneori ,' and the terminus at', geneter, '\n')
-if (verb=='n'){
+if (verb){cat("...gene statistics done!\n")}
+cat('Based on gene bias, the origin is located at', geneori ,' and the terminus at', geneter, '\n')
+if (verb){
   plot(cumgenebias$xpos, cumgenebias$cumgene, type='l')
 }
 rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos,gcori=ori, gc3ori=gc3ori, gcter=ter, gc3ter=gc3ter, geneori=geneori, geneter=geneter)
+#print(head(rawoutput))
 return(rawoutput)
-print(head(rawoutput))
 }
-
-#=======
-
-#return(gc3s)
-#>>>>>>> 625533ef50e1370ccb00a1e094721bd9934c9acd

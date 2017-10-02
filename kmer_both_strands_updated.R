@@ -17,6 +17,7 @@
 #require("ape")
 #require("pracma")
 kmers<-function(mydna, verb){
+if(verb){cat("Running kmer statistics...\n")}
 #Download sequence from database. Function from Little book of R for bioinf
 getncbiseq <- function(accession) 
 {
@@ -141,7 +142,7 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
     cat("No skewed kmers existed in more than ",g_min," windows! \n")
     stop()
   }
-  cat("Number of kmers found in more than ", g_min, " windows: ", tot, "\n" )
+  if (verb){cat("Number of kmers found in more than ", g_min, " windows: ", tot, "\n" )}
   #Order the kmers by the p1 values divided by the kmer_g count values
   pg_vec <- kmer_p_found / kmer_g_found
   order_by_pg <- sort.list(pg_vec, decreasing = FALSE) 
@@ -309,11 +310,12 @@ slidingwindowplot <- function(windowsize, find_kmers_wind, step_len, inputseq, a
   scaled_gc <- scaling_factor*cum_gc_vec + shifting_const #So that it's visible in the plot
   min_y = min(c(min(scaled_gc), min(tot_change)))
   max_y = max(c(max(scaled_gc), max(tot_change)))
-  if(verb=='n'){
+  if(verb){
     plot(mid_points,scaled_gc,type="l", col="blue", main = title, xlab="Middle pos of each window",ylab="Blue=Scaled cum GCskew, Green=Sum(kmer change), Red=Interpol green", ylim=(c(min_y,max_y)))
     lines(mid_points, tot_change, type = "p", col = "green")
     lines(pos_interpolated,tot_change_interpolated, type = "l", col = "red")
   }
+  if (verb){cat("...kmer statistics done!\n")}
   return(list(xpos=mid_points, cumgc=cum_gc_vec, tot_change=tot_change, pos_interp=pos_interpolated, tot_change_inter=tot_change_interpolated))
 }
 

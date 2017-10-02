@@ -1,59 +1,78 @@
-#Just starting to create the wrapper. Need to change plotting in both GC skew and k-mer so that it is optional.
-#Also need to link file fetching here, and then just input that to sources
+#Summary:
+#Import a FASTA file to be analyzed for statistics of Ori and Ter
+#based on GC, TA, kmer skews and strand bias.
+#Input arguments:
+#1. Either of:
+#access = "NCBI acession number"
+#fi = "local file path" (UNIX standard)
+#2. Optional:
+#verbose = "v" for progress reports and plotting
+
 findingOri<-function(access, fi, verbose){
   require(seqinr)
   require(ape)
   require(stringr)
   require(pracma)
-  #------------------Calling with file selection
-  if (missing(fi)==!TRUE){
-    #cat ('calling', fi)
-    #fi<-fi
-    if (missing(verbose)){
-      print ('figures will be produced!')
-      verb<-'n'
-    } else {
-      print('no figures will be produced!')
-      verb<-'y'
-    }
-    source("readFasta.R")
-    myDNAbin<-readFasta()
+  
+  cat("-------------------------------------\n")
+  cat("findingOri v1 [September, 2017]\n")
+  cat("Uppsala University\n")
+  cat("Lionel Guy, et al.\n")
+  cat("-------------------------------------\n")
+  
+  #------------------Calling
+  
+  # Parse arguments
+  if (!missing(access) & missing(fi)){
+    readfile = FALSE
+    cat ("Reading in fasta from accession number", access, "\n")
+  } else if (missing(access) & !missing(fi)) {
+    readfile = TRUE
+    cat("Reading in fasta from file", fi, "\n")
+  } else {
+    cat("Unspecified arguments!\n")
+    cat("Call findingOri in at least one of the following ways:\n")
+    cat("findingOri(accessnumber)\n")
+    cat("or findingOri(,fastafile)\n")
+    cat("Add","'v(erbose)'"," for slower calculation with figures\n")
+    cat("on the third parameter position in the function call.")
+    stop()
+  }
+  
+  if (missing(verbose)){
+    verb = FALSE
+    cat("No figures will be produced!\n")
+  } else {
+    verb = TRUE
+    cat("Figures will be produced!\n")
+  }
+  
+  # Read fasta file
+  if (readfile){
+    
+    # # Test files
+    # source("readFasta.R")
+    # myDNAbin <- readFasta(verb)
+    
+    # User files
+    source("readseqfile.R")
+    myDNAbin <- readseqfile(fi, verb)
+    if (verb){cat("Processing sequence data...")}
     myFasta<-write.dna(myDNAbin,file ="myFasta.fasta", format = "fasta")
     mySeq<-read.fasta("myFasta.fasta")
-    #mySeq<-readFasta()
-    #print(mySeq[1])
+    if (verb){cat("done!\n")}
+  }
+  
     source('GC_skew.R')
     source('kmer_both_strands_updated.R')
-    #mySeq<-getDNAbin(myDNAbin)
+    if (!readfile) {mySeq<-getfastafiles(access)}
+
     rawoutput<-GCall(mySeq,verb)
     kmerout<-kmers(mySeq, verb)
     #rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos)
     oriout<-list(gcori=rawoutput$gcori, gc3ori=rawoutput$gc3ori, gcter=rawoutput$gcter, gc3ter=rawoutput$gc3ter, geneori=rawoutput$geneori, geneter=rawoutput$geneter)
     #kmerout<-seq_skews
-    #----------------Calling with accecssion number
-    } else if (missing(access)==!TRUE){
-    cat ('reading in fasta from accession number', access)
-    access<-access
-      if (missing(verbose)){
-      print ('figures will be produced!')
-      verb<-'n'
-      } else {
-      print('no figures will be produced!')
-      verb<-'y'
-      }
-    source('GC_skew.R')
-    source('kmer_both_strands_updated.R')
-    mySeq<-getfastafiles(access)
-    #print(mySeq[1])
-    rawoutput<-GCall(mySeq,verb)
-    kmerout<-kmers(mySeq,verb)
-    #rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos)
-    oriout<-list(gcori=rawoutput$gcori, gc3ori=rawoutput$gc3ori, gcter=rawoutput$gcter, gc3ter=rawoutput$gc3ter, geneori=rawoutput$geneori, geneter=rawoutput$geneter)
-    #kmerout<-seq_skews
-    } else {
-    cat('Call findingOri with at least one of the following ways:\n findingOri(accessnumber)\n or findingOri(,fastafile)\n add call to verbose for faster calculations without figures \n on the third parameter position in the function call')
-    stop()
-    }
+
   #calculating the position of ori and ter from kmers
   kmer1<-kmerout$pos_interp[match(max(kmerout$tot_change_inter),kmerout$tot_change_inter)]
   #print(kmer1)
