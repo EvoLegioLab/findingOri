@@ -95,6 +95,7 @@ findingOri<-function(access, fi, verbose){
       kmerori<-kmer1
     }
   }
+  #Simple statistics with all metrics 
   combOri<-c(oriout$gcori,oriout$gc3ori,kmerori, oriout$geneori)
   SEori<-sd(combOri)/sqrt(length(combOri))*1.96
   Ori_upper<-mean(combOri)+SEori
