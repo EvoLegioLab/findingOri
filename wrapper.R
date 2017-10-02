@@ -84,7 +84,7 @@ findingOri<-function(access, fi, verbose){
   }else{
     kmer2<-kmer1+(seqlen/2)
   }
-  margin<-500000
+  margin<-0.1*seqlen
   if(kmer2+margin>seqlen){
     kmer2<-max(kmerout$tot_change_inter[which(kmerout$pos_interp%in%c((kmer2-margin):seqlen))])
     kmer2pos<-kmerout$pos_interp[which(kmerout$tot_change_inter%in%kmer2)]
