@@ -115,8 +115,18 @@ findingOri<-function(access, fi, verbose){
     }
   }
   #kmer output
-  cat('The position of the origin based on k-mer skew is at',kmerori)
-  cat('The position of the terminus based on k-mer skew is at',kmerter)
+  cat('The position of the origin based on k-mer skew is at',kmerori,'\n')
+  cat('The position of the terminus based on k-mer skew is at',kmerter,'\n')
+  #Calling snr for weighed averages
+  source('snr.R')
+  gcsnr<-snr(rawoutput$gc, 'gc snr', verb)[,'snr']
+  gc3snr<-snr(rawoutput$gc3, 'gc3 snr', verb)[,'snr']
+  genesnr<-snr(rawoutput$genebias, 'gene snr', verb)[,'snr']
+  kmersnr<-snr(kmerout$tot_change_inter, 'kmer snr', verb)[,'snr']
+  print(gcsnr)
+  print(gc3snr)
+  print(genesnr)
+  print(kmersnr)
   #Simple statistics with all metrics 
   combOri<-c(oriout$gcori,oriout$gc3ori,kmerori, oriout$geneori)
   SEori<-sd(combOri)/sqrt(length(combOri))*1.96

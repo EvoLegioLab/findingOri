@@ -210,7 +210,7 @@ cat('Based on gene bias, the origin is located at', geneori ,' and the terminus 
 if (verb){
   plot(cumgenebias$xpos, cumgenebias$cumgene, type='l',main='Cumulative gene bias over the whole chromosome',xlab='Position on chromosome',ylab='Cumulative gene count')
 }
-rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos,gcori=ori, gc3ori=gc3ori, gcter=ter, gc3ter=gc3ter, geneori=geneori, geneter=geneter)
+rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,cumgc=gccount$cumgc,cumgc3=gc3s$cumgc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos,gcori=ori, gc3ori=gc3ori, gcter=ter, gc3ter=gc3ter, geneori=geneori, geneter=geneter)
 #print(head(rawoutput))
 return(rawoutput)
 }
