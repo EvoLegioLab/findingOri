@@ -120,6 +120,25 @@ if (verb){
 }
 ter<-gccount$xpos[match(max(gccount$cumgc),gccount$cumgc)]
 ori<-gccount$xpos[match(min(gccount$cumgc),gccount$cumgc)]
+tamin<-gccount$xpos[match(min(gccount$cumta),gccount$cumta)]
+tamax<-gccount$xpos[match(max(gccount$cumta),gccount$cumta)]
+if (ter>ori){
+  if(tamin>tamax){
+    tater<-tamin
+    taori<-tamax
+  }else{
+    ta3ter<-ta3max
+    ta3ori<-ta3min
+  }
+}else{
+  if(tamin>tamax){
+    tater<-tamax
+    taori<-tamin
+  }else{
+    tater<-tamim
+    taori<-tamax
+  }
+}
 if (verb){cat("done!\n")}
 cat('Based on gc, the origin is located at', ori ,' and the terminus at', ter,'\n')
 #-------------gc3-------------
@@ -142,6 +161,25 @@ if (verb){
 }
 gc3ter<-gc3s$xpos[match(max(gc3s$cumgc),gc3s$cumgc)]
 gc3ori<-gc3s$xpos[match(min(gc3s$cumgc),gc3s$cumgc)]
+ta3min<-gc3s$xpos[match(min(gc3s$cumta),gc3s$cumta)]
+ta3max<-gc3s$xpos[match(max(gc3s$cumta),gc3s$cumta)]
+if (gc3ter>gc3ori){
+  if(ta3min>ta3max){
+    ta3ter<-ta3min
+    ta3ori<-ta3max
+  }else{
+    ta3ter<-ta3max
+    ta3ori<-ta3min
+  }
+}else{
+  if(ta3min>ta3max){
+    ta3ter<-ta3max
+    ta3ori<-ta3min
+  }else{
+    ta3ter<-ta3mim
+    ta3ori<-ta3max
+  }
+}
 if (verb){cat("...3rd codon position calculations done!\n")}
 cat('Based on gc3, the origin is located at', gc3ori ,' and the terminus at', gc3ter, "\n")
 
@@ -210,7 +248,7 @@ cat('Based on gene bias, the origin is located at', geneori ,' and the terminus 
 if (verb){
   plot(cumgenebias$xpos, cumgenebias$cumgene, type='l',main='Cumulative gene bias over the whole chromosome',xlab='Position on chromosome',ylab='Cumulative gene count')
 }
-rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,cumgc=gccount$cumgc,cumgc3=gc3s$cumgc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos,gcori=ori, gc3ori=gc3ori, gcter=ter, gc3ter=gc3ter, geneori=geneori, geneter=geneter)
+rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,ta=gccount$ta,ta3=gc3s$ta,cumgc=gccount$cumgc,cumgc3=gc3s$cumgc, cumta=gccount$cumta, cumta3=gc3s$cumta,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos,gcori=ori, gc3ori=gc3ori, gcter=ter, gc3ter=gc3ter, taori=taori, tater=tater, geneori=geneori, geneter=geneter)
 #print(head(rawoutput))
 return(rawoutput)
 }
