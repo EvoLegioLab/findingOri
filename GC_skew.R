@@ -110,13 +110,13 @@ mySeq<-mysequence
 #NOTE! Fasta used in the following calls MUST be in the variable mySeq!
 #------------GC-----------------
 #Running gc counts on whole sequence
-if (verb){cat("Running raw nucleotide statistics...")}
+if (verb){cat("Running raw nucleotide calculations...")}
 gccount<-countgc(mySeq)
 gccount$cumgc<-cumsum(gccount$gc)
 gccount$cumta<-cumsum(gccount$ta)
 if (verb){
-  plot(gccount$xpos, gccount$cumgc, type='l')
-  plot(gccount$xpos, gccount$cumta, type='l')
+  plot(gccount$xpos, gccount$cumgc, type='l', main='Cumulative GC-skew based whole sequence', xlab='Position on chromosome', ylab='Cumulative GC')
+  plot(gccount$xpos, gccount$cumta, type='l', main='Cumulative TA-skew based on whole sequence',xlab='Position on chromosome',ylab='Cumulative TA')
 }
 ter<-gccount$xpos[match(max(gccount$cumgc),gccount$cumgc)]
 ori<-gccount$xpos[match(min(gccount$cumgc),gccount$cumgc)]
@@ -128,7 +128,7 @@ if (verb){cat("Running gene prediction...\n")
 system('prodigal -i myFasta.fasta -o myGenCoord.fasta -d myGenSeqs.fasta')}
 system('prodigal -q -i myFasta.fasta -o myGenCoord.fasta -d myGenSeqs.fasta')
 if (verb){cat("...gene prediction done!\n")
-cat("Running 3d codon position statistics...\n")}
+cat("Running 3rd codon position calculations...\n")}
 mygenseq<-read.fasta('myGenSeqs.fasta')
 myAnnot<-sapply(mygenseq,function(x) strsplit(getAnnot(x),'#'))
 annotinfo<- lapply(lapply(myAnnot,'[', 1:4),function(x) as.integer(x[2:4]))
@@ -137,12 +137,12 @@ gc3s<-countgc(thirds$plusncl, thirds$pluspos)
 gc3s$cumgc<-cumsum(gc3s$gc)
 gc3s$cumta<-cumsum(gc3s$ta)
 if (verb){
-  plot(gc3s$xpos, gc3s$cumgc, type='l')
-  plot(gc3s$xpos,gc3s$cumta, type='l')
+  plot(gc3s$xpos, gc3s$cumgc, type='l', main='Cumulative GC-skew based on 3rd codon position',xlab='Position on chromosome', ylab='Cumulative GC')
+  plot(gc3s$xpos,gc3s$cumta, type='l', main='Cumulative TA-skew based on 3rd codon position',xlab='Position on chromosome',ylab='Cumulative TA')
 }
 gc3ter<-gc3s$xpos[match(max(gc3s$cumgc),gc3s$cumgc)]
 gc3ori<-gc3s$xpos[match(min(gc3s$cumgc),gc3s$cumgc)]
-if (verb){cat("...3d codon position statistics done!\n")}
+if (verb){cat("...3rd codon position calculations done!\n")}
 cat('Based on gc3, the origin is located at', gc3ori ,' and the terminus at', gc3ter, "\n")
 
 #---Counting genes------------------
@@ -155,28 +155,37 @@ simplegenecount<-function(annotations){
   if(ori<ter){
     lespos<-c(gc3ori:gc3ter)
     laspos<-c(gc3ter:length(mySeq), 1:gc3ori)
+    #assuming prodigal +1 is the lagging strand when ori comes before ter
+    for (i in 1:length(annotations)){
+      if((annotations[[i]][2] %in% lespos)&&(annotations[[i]][3]==-1)|(annotations[[i]][2] %in% laspos)&&(annotations[[i]][3]==1)){
+        lescount<-lescount+1
+      } else{
+        lascount<-lascount+1
+      }
+    }
   }else{
     lespos<-c(gc3ori:length(mySeq), 1:gc3ter)
     laspos<-c(gc3ter:gc3ori)
-  }
-  for (i in 1:length(annotations)){
-    if(annotations[[i]][2] %in% lespos){
-      lescount<-lescount+1
-    } else{
-      lascount<-lascount+1
+    #assuming prodigal +1 is the leading strand when ter comes before ori
+    for (i in 1:length(annotations)){
+      if((annotations[[i]][2] %in% lespos)&&(annotations[[i]][3]==1)|(annotations[[i]][2] %in% laspos)&&(annotations[[i]][3]==-1)){
+        lescount<-lescount+1
+      } else{
+        lascount<-lascount+1
+      }
     }
   }
   genecounts<-list(lesc=lescount, lasc=lascount)
 }
 
 #------------Running gene counts-----------------
-if (verb){cat("Running gene statistics...\n")}
+if (verb){cat("Running gene bias calculations...\n")}
 genecount<-simplegenecount(annotinfo)
 #genecount
 genebias<-(genecount$lesc/(genecount$lesc+genecount$lasc))*100
 cat(genebias, '% of genes are on the leading strand\n')
 
-#more elaborated try with windows and plotting
+#more elaborated gene bias cumulative calculation with windows and plotting
 cumgenecount<-function(myannot){
   xpos<-list()
   ypos<-list()
@@ -186,7 +195,7 @@ cumgenecount<-function(myannot){
     ypos[i]<-myannot[[i]][3]
   }
   xpos<-unlist(xpos,recursive=TRUE)
-  ypos<-unlist(ypos, recursive=TRUE)
+  ypos<-unlist(ypos,recursive=TRUE)
   #print(head(xpos))
   #print(head(ypos))
   cumgene<-cumsum(ypos)
@@ -196,10 +205,10 @@ cumgenecount<-function(myannot){
 cumgenebias<-cumgenecount(annotinfo)
 geneter<-cumgenebias$xpos[match(max(cumgenebias$cumgene),cumgenebias$cumgene)]
 geneori<-cumgenebias$xpos[match(min(cumgenebias$cumgene), cumgenebias$cumgene)]
-if (verb){cat("...gene statistics done!\n")}
+if (verb){cat("...gene bias calculations done!\n")}
 cat('Based on gene bias, the origin is located at', geneori ,' and the terminus at', geneter, '\n')
 if (verb){
-  plot(cumgenebias$xpos, cumgenebias$cumgene, type='l')
+  plot(cumgenebias$xpos, cumgenebias$cumgene, type='l',main='Cumulative gene bias over the whole chromosome',xlab='Position on chromosome',ylab='Cumulative gene count')
 }
 rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos,gcori=ori, gc3ori=gc3ori, gcter=ter, gc3ter=gc3ter, geneori=geneori, geneter=geneter)
 #print(head(rawoutput))
