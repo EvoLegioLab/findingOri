@@ -1,3 +1,5 @@
+#Summary:
+#Import a FASTA file to be analyzed
 
 # Load Packages -----------------------------------------------------------
 

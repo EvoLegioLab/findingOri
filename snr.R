@@ -1,7 +1,13 @@
+#Summary:
+#Data is summarized by 
+#Input arguments:
+#data = vector with data
+#label = histogram label
+#verb = T/F for progress reports and plotting
 
 # snr by window -----------------------------------------------------------
 
-snr <- function(data){
+snr <- function(data, label, verb){
   
   datalength = length(data)
   windowlength = 100
@@ -21,17 +27,9 @@ snr <- function(data){
     j <- j + 1
   }
   
-  # print(skewvec.mean)
-  # print(skewvec.std)
-  # min_y = min(c(min(skewvec.mean), min(skewvec.std)))
-  # max_y = max(c(max(skewvec.mean), max(skewvec.std)))
-  # 
-  # plot(skewvec.index, skewvec.mean, type="l", main = "skew statistics", xlab="Index",ylab="Black=Mean, Green=Std.dev", ylim=(c(min_y,max_y)))
-  # lines(skewvec.std, type = "l", col = "green")
-
-  hist(skewvec.std)
-
+  if (verb){hist(skewvec.std, main = label)}
   snr <- data.frame(mean=mean(skewvec.std), std=sd(skewvec.std), snr=mean(skewvec.std)/sd(skewvec.std))
+  
   return(snr)
 
 }
