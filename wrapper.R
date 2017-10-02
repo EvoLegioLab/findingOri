@@ -125,15 +125,23 @@ findingOri<-function(access, fi, verbose){
   Ter_lower<-mean(combTer)+SEter
   cat('The combined measure of origin is at position',mean(combOri),'+-',SEori,'\n')
   cat('The combined measure of terminus is at position',mean(combTer),'+-',SEter,'\n')
-  if(missing(verb)){
+  #for plotting
+  orilimits<-SEori/(1/4*seqlen)
+  terlimits<-SEter/(1/4*seqlen)
+  if(verb==TRUE){
     plot(c(-1,1),c(1,-1), type='n', asp=1)
+    title(main='Gaphical representation of calculated ori and ter positions (black dots) with 95% confidence intervals (red line)')
+    text(0.5,1,paste('Origin of replication at',round(mean(combOri))), pos=4)
+    text(0.5,-1,paste('Terminus of replication at',round(mean(combTer))),pos=4)
     radius<-1
-    theta<-seq(0,2*pi, length=200)
+    theta<-seq(0,2*pi, length=100)
     x<-radius*cos(theta)
     y<-radius*sin(theta)
     lines(x,y)
-    points(mean(x),testori)
-    points(mean(x),min(y))
-    lines(c(Oriup,orilow),c(1,1), type='l',col='red')
+    points(mean(x),max(y), pch=19, cex=2 )
+    points(mean(x),min(y), pch=19, cex=2)
+    lines(c(-orilimits,orilimits),c(1,1), type='l',col='red', lwd=3)
+    lines(c(-terlimits,terlimits),c(-1,-1), type='l',col='red', lwd=3)
+    
   }
 }
