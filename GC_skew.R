@@ -127,15 +127,15 @@ if (ter>ori){
     tater<-tamin
     taori<-tamax
   }else{
-    ta3ter<-ta3max
-    ta3ori<-ta3min
+    tater<-tamax
+    taori<-tamin
   }
 }else{
   if(tamin>tamax){
     tater<-tamax
     taori<-tamin
   }else{
-    tater<-tamim
+    tater<-tamin
     taori<-tamax
   }
 }
@@ -176,7 +176,7 @@ if (gc3ter>gc3ori){
     ta3ter<-ta3max
     ta3ori<-ta3min
   }else{
-    ta3ter<-ta3mim
+    ta3ter<-ta3min
     ta3ori<-ta3max
   }
 }
