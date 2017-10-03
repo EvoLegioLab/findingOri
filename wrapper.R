@@ -63,38 +63,41 @@ findingOri<-function(access, fi, verbose){
     if (verb){cat("done!\n")}
   }
   
-    source('GC_skew.R')
-    source('kmer_both_strands_updated.R')
-    if (!readfile) {mySeq<-getfastafiles(access)}
-
-    rawoutput<-GCall(mySeq,verb)
-    
-    # #calculating the position of ori and ter from snr
-    # if (verb){cat("Processing snr data...")}
-    # source("snr_ori_ter.R")
-    # snrgc <- snr_ori_ter(rawoutput$gc, rawoutput$gcxpos, 'gc sliding snr', verb)
-    # snrta <- snr_ori_ter(rawoutput$ta, rawoutput$taxpos, 'at sliding snr', verb)
-    # snrgc3 <- snr_ori_ter(rawoutput$gc3, rawoutput$gc3xpos, 'gc sliding snr', verb)
-    # snrta3 <- snr_ori_ter(rawoutput$ta3, rawoutput$ta3xpos, 'at sliding snr', verb)
-    # if (verb){cat("done!\n")}
-    # 
-    # #snr output
-    # cat('The position of the origin based on gc skew snr is at',snrgc$pos,'\n')
-    # cat('The position of the terminus based on gc skew snr is at',snrgc$neg,'\n')
-    # 
-    # cat('The position of the origin based on ta skew snr is at',snrta$neg,'\n')
-    # cat('The position of the terminus based on gc skew snr is at',snrta$pos,'\n')
-    # 
-    # cat('The position of the origin based on gc3 skew snr is at',snrgc$pos,'\n')
-    # cat('The position of the terminus based on gc3 skew snr is at',snrgc$neg,'\n')
-    # 
-    # cat('The position of the origin based on ta3 skew snr is at',snrgc$neg,'\n')
-    # cat('The position of the terminus based on ta3 skew snr is at',snrgc$pos,'\n')
-    
-    kmerout<-kmers(mySeq, verb)
-    #rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos)
-    oriout<-list(gcori=rawoutput$gcori, gc3ori=rawoutput$gc3ori, gcter=rawoutput$gcter, gc3ter=rawoutput$gc3ter, taori=rawoutput$taori, ta3ori=rawoutput$ta3ori,tater=rawoutput$tater,ta3ter=rawoutput$ta3ter,geneori=rawoutput$geneori, geneter=rawoutput$geneter)
-    #kmerout<-seq_skews
+  # Fetch fasta by accession number
+  if (!readfile) {mySeq<-getfastafiles(access)}
+  
+  # Assemble nucleotide and gene statistics 
+  source('GC_skew.R')
+  rawoutput<-GCall(mySeq,verb)
+  
+  #Calculate position of ori and ter from snr
+  if (verb){cat("Processing snr data...")}
+  source("snr_ori_ter.R")
+  snrgc <- snr_ori_ter(rawoutput$gc, rawoutput$gcxpos, 'gc sliding snr', verb)
+  snrta <- snr_ori_ter(rawoutput$ta, rawoutput$gcxpos, 'at sliding snr', verb)
+  snrgc3 <- snr_ori_ter(rawoutput$gc3, rawoutput$gc3xpos, 'gc sliding snr', verb)
+  snrta3 <- snr_ori_ter(rawoutput$ta3, rawoutput$gc3xpos, 'at sliding snr', verb)
+  if (verb){cat("done!\n")}
+  
+  #snr output
+  cat('The position of the origin based on gc skew snr is at',snrgc$pos,'\n')
+  cat('The position of the terminus based on gc skew snr is at',snrgc$neg,'\n')
+  
+  cat('The position of the origin based on ta skew snr is at',snrta$neg,'\n')
+  cat('The position of the terminus based on ta skew snr is at',snrta$pos,'\n')
+  
+  cat('The position of the origin based on gc3 skew snr is at',snrgc3$pos,'\n')
+  cat('The position of the terminus based on gc3 skew snr is at',snrgc3$neg,'\n')
+  
+  cat('The position of the origin based on ta3 skew snr is at',snrta3$neg,'\n')
+  cat('The position of the terminus based on ta3 skew snr is at',snrta3$pos,'\n')
+  
+  # Assemble kmer statistics
+  source('kmer_both_strands_updated.R')
+  kmerout<-kmers(mySeq, verb)
+  #rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos)
+  oriout<-list(gcori=rawoutput$gcori, gc3ori=rawoutput$gc3ori, gcter=rawoutput$gcter, gc3ter=rawoutput$gc3ter, taori=rawoutput$taori, ta3ori=rawoutput$ta3ori,tater=rawoutput$tater,ta3ter=rawoutput$ta3ter,geneori=rawoutput$geneori, geneter=rawoutput$geneter)
+  #kmerout<-seq_skews
     
   #calculating the position of ori and ter from kmers
   kmer1<-kmerout$pos_interp[match(max(kmerout$tot_change_inter),kmerout$tot_change_inter)]

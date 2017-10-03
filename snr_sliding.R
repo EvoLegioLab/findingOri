@@ -45,7 +45,7 @@ snr_sliding <- function(seqdata, seqpos, label, verb){
     j <- j + 1
   }
   
-  if(verb){hist(skewvec.snr)}
+  if(verb){hist(skewvec.snr, main="Histogram for snr", xlab=label)}
 
   outlen <- veclength-1
   snr_windows <- list(xpos=skewvec.pos[1:outlen], mean=skewvec.mean[1:outlen], std=skewvec.std[1:outlen], snr=skewvec.snr[1:outlen])

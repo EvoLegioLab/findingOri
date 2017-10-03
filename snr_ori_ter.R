@@ -26,7 +26,7 @@ snr_ori_ter <- function(seqdata, seqpos, label, verb){
   
   # list positive signals by position
   for(i in 1:veclength) {
-       if(snrdata$mean[i] < 0){
+       if(snrdata$mean[i] > 0){
          pos_change$xpos <- c(pos_change$xpos, snrdata$xpos[i])
          pos_change$snr <- c(pos_change$snr, snrdata$snr[i])
        }
@@ -34,7 +34,7 @@ snr_ori_ter <- function(seqdata, seqpos, label, verb){
 
   # list negative signals by position
   for(i in 1:veclength) {
-    if(snrdata$mean[i] > 0){
+    if(snrdata$mean[i] < 0){
       neg_change$xpos <- c(neg_change$xpos, snrdata$xpos[i])
       neg_change$snr <- c(neg_change$snr, snrdata$snr[i])
     }
@@ -42,7 +42,10 @@ snr_ori_ter <- function(seqdata, seqpos, label, verb){
   
   # Return ori and ter candidates
   # For gc ori will be positive skew change, for ta negative
-  snr_candidates <- list(pos=max(pos_change), neg=max(neg_change)
+  pos_snr <- which.max(pos_change$snr)
+  neg_snr <- which.max(neg_change$snr)
+  
+  snr_candidates <- list(pos=pos_change$xpos[pos_snr], neg=neg_change$xpos[neg_snr])
   return(snr_candidates)
 
 }
