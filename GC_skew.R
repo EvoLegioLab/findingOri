@@ -115,7 +115,7 @@ gccount<-countgc(mySeq)
 gccount$cumgc<-cumsum(gccount$gc)
 gccount$cumta<-cumsum(gccount$ta)
 if (verb){
-  plot(gccount$xpos, gccount$cumgc, type='l', main='Cumulative GC-skew based whole sequence', xlab='Position on chromosome', ylab='Cumulative GC')
+  plot(gccount$xpos, gccount$cumgc, type='l', main='Cumulative GC-skew based on whole sequence', xlab='Position on chromosome', ylab='Cumulative GC')
   plot(gccount$xpos, gccount$cumta, type='l', main='Cumulative TA-skew based on whole sequence',xlab='Position on chromosome',ylab='Cumulative TA')
 }
 ter<-gccount$xpos[match(max(gccount$cumgc),gccount$cumgc)]

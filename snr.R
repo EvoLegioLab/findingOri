@@ -1,5 +1,5 @@
 #Summary:
-#Data is summarized by 
+#Data is summarized by snr in windows
 #Input arguments:
 #data = vector with data
 #label = histogram label
