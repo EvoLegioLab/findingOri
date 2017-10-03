@@ -3,7 +3,7 @@
 #based on GC, TA, kmer skews and strand bias.
 #Input arguments:
 #1. Either of:
-#access = "NCBI acession number"
+#access = "NCBI accession number"
 #fi = "local file path" (UNIX standard)
 #2. Optional:
 #verbose = "v" for progress reports and plotting
@@ -68,11 +68,34 @@ findingOri<-function(access, fi, verbose){
     if (!readfile) {mySeq<-getfastafiles(access)}
 
     rawoutput<-GCall(mySeq,verb)
+    
+    # #calculating the position of ori and ter from snr
+    # if (verb){cat("Processing snr data...")}
+    # source("snr_ori_ter.R")
+    # snrgc <- snr_ori_ter(rawoutput$gc, rawoutput$gcxpos, 'gc sliding snr', verb)
+    # snrta <- snr_ori_ter(rawoutput$ta, rawoutput$taxpos, 'at sliding snr', verb)
+    # snrgc3 <- snr_ori_ter(rawoutput$gc3, rawoutput$gc3xpos, 'gc sliding snr', verb)
+    # snrta3 <- snr_ori_ter(rawoutput$ta3, rawoutput$ta3xpos, 'at sliding snr', verb)
+    # if (verb){cat("done!\n")}
+    # 
+    # #snr output
+    # cat('The position of the origin based on gc skew snr is at',snrgc$pos,'\n')
+    # cat('The position of the terminus based on gc skew snr is at',snrgc$neg,'\n')
+    # 
+    # cat('The position of the origin based on ta skew snr is at',snrta$neg,'\n')
+    # cat('The position of the terminus based on gc skew snr is at',snrta$pos,'\n')
+    # 
+    # cat('The position of the origin based on gc3 skew snr is at',snrgc$pos,'\n')
+    # cat('The position of the terminus based on gc3 skew snr is at',snrgc$neg,'\n')
+    # 
+    # cat('The position of the origin based on ta3 skew snr is at',snrgc$neg,'\n')
+    # cat('The position of the terminus based on ta3 skew snr is at',snrgc$pos,'\n')
+    
     kmerout<-kmers(mySeq, verb)
     #rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos)
     oriout<-list(gcori=rawoutput$gcori, gc3ori=rawoutput$gc3ori, gcter=rawoutput$gcter, gc3ter=rawoutput$gc3ter, taori=rawoutput$taori, ta3ori=rawoutput$ta3ori,tater=rawoutput$tater,ta3ter=rawoutput$ta3ter,geneori=rawoutput$geneori, geneter=rawoutput$geneter)
     #kmerout<-seq_skews
-
+    
   #calculating the position of ori and ter from kmers
   kmer1<-kmerout$pos_interp[match(max(kmerout$tot_change_inter),kmerout$tot_change_inter)]
   #print(kmer1)
@@ -117,6 +140,7 @@ findingOri<-function(access, fi, verbose){
   #kmer output
   cat('The position of the origin based on k-mer skew is at',kmerori,'\n')
   cat('The position of the terminus based on k-mer skew is at',kmerter,'\n')
+
   #Calling snr for weighed averages
   source('snr.R')
   gcsnr<-snr(rawoutput$gc, 'gc snr', verb)[,'snr']
@@ -151,7 +175,7 @@ findingOri<-function(access, fi, verbose){
   terlimits<-SEter/(1/4*seqlen)
   if(verb==TRUE){
     plot(c(-1,1),c(1,-1), type='n', asp=1)
-    title(main='Gaphical representation of calculated ori and ter positions (black dots) with 95% confidence intervals (red line)')
+    title(main='Graphical representation of calculated ori and ter positions (black dots) with 95% confidence intervals (red line)')
     text(0.5,0.96,paste('Origin of replication at',round(mean(combOri))), pos=4)
     text(0.5,-0.96,paste('Terminus of replication at',round(mean(combTer))),pos=4)
     radius<-1
@@ -181,7 +205,7 @@ findingOri<-function(access, fi, verbose){
   wterlimits<-wSEter/(1/4*seqlen)
   if(verb==TRUE){
     plot(c(-1,1),c(1,-1), type='n', asp=1)
-    title(main='Gaphical representation of calculated ori and ter positions from \n weighted means (black dots) with 95% confidence intervals (red line)')
+    title(main='Graphical representation of calculated ori and ter positions from \n weighted means (black dots) with 95% confidence intervals (red line)')
     text(0.5,0.96,paste('Weighted origin of replication at',round(mean(weightedcombOri))), pos=4)
     text(0.5,-0.96,paste('Weighted terminus of replication at',round(mean(weightedcombTer))),pos=4)
     radius<-1
