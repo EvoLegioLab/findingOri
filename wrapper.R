@@ -57,8 +57,9 @@ findingOri<-function(access, fi, verbose){
     # User files
     source("readseqfile.R")
     myDNAbin <- readseqfile(fi, verb)
+    #print(myDNAbin)
     if (verb){cat("Processing sequence data...")}
-    myFasta<-write.dna(myDNAbin,file ="myFasta.fasta", format = "fasta")
+    myFasta<-write.fasta(sequences=myDNAbin, names=names(myDNAbin),file.out ="myFasta.fasta")
     mySeq<-read.fasta("myFasta.fasta")
     if (verb){cat("done!\n")}
   }
@@ -74,9 +75,9 @@ findingOri<-function(access, fi, verbose){
   if (verb){cat("Processing snr data...")}
   source("snr_ori_ter.R")
   snrgc <- snr_ori_ter(rawoutput$gc, rawoutput$gcxpos, 'gc sliding snr', verb)
-  snrta <- snr_ori_ter(rawoutput$ta, rawoutput$gcxpos, 'at sliding snr', verb)
-  snrgc3 <- snr_ori_ter(rawoutput$gc3, rawoutput$gc3xpos, 'gc sliding snr', verb)
-  snrta3 <- snr_ori_ter(rawoutput$ta3, rawoutput$gc3xpos, 'at sliding snr', verb)
+  snrta <- snr_ori_ter(rawoutput$ta, rawoutput$gcxpos, 'ta sliding snr', verb)
+  snrgc3 <- snr_ori_ter(rawoutput$gc3, rawoutput$gc3xpos, 'gc3fin sliding snr', verb)
+  snrta3 <- snr_ori_ter(rawoutput$ta3, rawoutput$gc3xpos, 'ta3 sliding snr', verb)
   if (verb){cat("done!\n")}
   
   #snr output
