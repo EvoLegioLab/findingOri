@@ -1,4 +1,4 @@
-![findingOri logo](https://github.com/EvoLegioLab/findingOri/blob/master/logo/rsz_findingOriLogo.png)
+![findingOri logo](https://github.com/EvoLegioLab/findingOri/blob/master/logo/rsz_findingorilogo.png)
 
 Ori and Ter prediction for prokaryotic circular chromosomes.
 
