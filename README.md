@@ -1,41 +1,45 @@
-![findingOri logo](https://github.com/EvoLegioLab/findingOri/blob/master/logo/findingOriLogo.png)
+![findingOri logo](https://github.com/EvoLegioLab/findingOri/blob/master/logo/rsz_findingOriLogo.png)
 
 Ori and Ter prediction for prokaryotic circular chromosomes.
 
+```bash
 findingOri("accession",,) # NCBI accession number
 findingOri(,"file path" ,) # Local fasta file path, UNIX standard
 findingOri("accession","v") # verbose, with plots
 findingOri(,"file path" ,"v") # verbose, with plots
+```
 
-### **New in 1.0.0 (October 2017)**
+### New in 1.0.0 (October 2017)
 
-> <sub>* First release.
+* First release.
 
-### **Getting Started**
+### **Getting Started
 
 FindingOri consists of a set of R files, with a wrapper that calls R packages and other source files. To run it you need to first install Prodigal under bash [ [Installing Prodigal](https://www.github.com/hyattpd/Prodigal/wiki/installation)]. Called R packages are: seqinr, ape, stringr and pracma. You can then install from source as follows:
 
+```bash
 $ source("wrapper.R")
+```
 
-### **Features**
+### Features
 
-> <sub>* Predicts Ori and Ter of small circular chromosomes from FASTA DNA sequences.
+* **Predicts Ori and Ter of small circular chromosomes from FASTA DNA sequences.
 
-> <sub>* The user need to ensure that the target chromosome is the only sequence.
+* **The user need to ensure that the target chromosome is the only sequence.
 
-> <sub>* Runs quickly: findingOri analyzes the *E. coli K-12* genome in 60 seconds on a modern MacBook Pro.
+* **Runs quickly: findingOri analyzes the *E. coli K-12* genome in 60 seconds on a modern MacBook Pro.
 
-> <sub>* Runs unsupervised.
+* **Runs unsupervised.
 
-### **More Information**
+### More Information
 
-> <sub>* [Website](https://github.com/EvoLegioLab/findingOri)
+* [Website](https://github.com/EvoLegioLab/findingOri)
 
-#### **Contributors**
+#### Contributors
 
-> <sub>* Author: Torbjörn Larsson
+* Author: Torbjörn Larsson
 
-#### **License**
+#### License
 
 [GPL](https://github.com/EvoLegioLab/findingOri/blob/master/LICENSE)
 
