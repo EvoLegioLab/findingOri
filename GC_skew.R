@@ -4,13 +4,16 @@
 #Importing data from binary DNA file or with an accession number
 getfastafiles<-function(accession){
   myDNAbin<-read.GenBank(accession)
-  myFasta<-write.dna(myDNAbin,file ="myFasta.fasta", format = "fasta")
-  mySeq<-read.fasta("myFasta.fasta")
+  myFastafile<-write.dna(myDNAbin,file ="myFasta.fasta", format = "fasta", colsep = "")
+  #print(myFasta)
+  mySeq<-read.fasta("myFasta.fasta",seqtype= "DNA", as.string=TRUE)
+  #myFasta<-write.fasta(sequences=myFastafile, names=names(myFastafile),file.out ="myFasta.fasta") 
+  #print(mySeq)
   return(mySeq)
 }
 getDNAbin<-function(mybinfile){
   myFasta<-write.dna(mybinfile,file ="myFasta.fasta", format = "fasta")
-  mySeq<-read.fasta("myFasta.fasta")
+  mySeq<-read.fasta("myFasta.fasta",seqtype= "DNA", as.string="TRUE")
   return(mySeq)
 }
 GCall<-function(mysequence,verb){
