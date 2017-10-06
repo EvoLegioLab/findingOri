@@ -184,8 +184,8 @@ findingOri<-function(access, fi, verbose){
   if(verb==TRUE){
     plot(c(-1,1),c(1,-1), type='n', asp=1)
     title(main='Graphical representation of calculated ori and ter positions (black dots) with 95% confidence intervals (red line)')
-    text(0.5,0.96,paste('Origin of replication at',round(mean(combOri))), pos=4)
-    text(0.5,-0.96,paste('Terminus of replication at',round(mean(combTer))),pos=4)
+    text(0.5,0.96,paste('Origin of replication at',round(mean(combOri))), pos=4,cex=1.2)
+    text(0.5,-0.96,paste('Terminus of replication at',round(mean(combTer))),pos=4, cex=1.2)
     radius<-1
     theta<-seq(0,2*pi, length=100)
     x<-radius*cos(theta)
@@ -214,8 +214,8 @@ findingOri<-function(access, fi, verbose){
   if(verb==TRUE){
     plot(c(-1,1),c(1,-1), type='n', asp=1)
     title(main='Graphical representation of calculated ori and ter positions from \n weighted means (black dots) with 95% confidence intervals (red line)')
-    text(0.5,0.96,paste('Weighted origin of replication at',round(mean(weightedcombOri))), pos=4)
-    text(0.5,-0.96,paste('Weighted terminus of replication at',round(mean(weightedcombTer))),pos=4)
+    text(0.5,0.96,paste('Weighted origin of replication at',round(mean(weightedcombOri))), pos=4,cex=1.2)
+    text(0.5,-0.96,paste('Weighted terminus of replication at',round(mean(weightedcombTer))),pos=4,cex=1.2)
     radius<-1
     theta<-seq(0,2*pi, length=100)
     x<-radius*cos(theta)
