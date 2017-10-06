@@ -106,18 +106,21 @@ findingOri<-function(access, fi, verbose){
   seqlen<-length(getSequence(mySeq[[1]]))
   #print(seqlen)
   if(kmer1+(seqlen/2)>seqlen){
-    peak_diff<-(kmer1-seqlen)-round((seqlen/2))
-    kmer2<-1+peak_diff
+    #peak_diff<-(kmer1-seqlen)-round((seqlen/2))
+    #kmer2<-1+peak_diff
+    kmer2 <- kmer1 + round(seqlen/2) - seqlen
   }else{
     kmer2<-kmer1+round((seqlen/2))
   }
   margin<-round((0.1*seqlen))
   #print(margin)
   if(kmer2+margin>seqlen){
-    kmer2<-max(kmerout$tot_change_inter[which(kmerout$pos_interp%in%c((kmer2-margin):seqlen))])
+    #kmer2<-max(kmerout$tot_change_inter[which(kmerout$pos_interp%in%c((kmer2-margin):seqlen))])
+    kmer2<-max(kmerout$tot_change_inter[which(kmerout$pos_interp%in%c((kmer2-margin):seqlen,1:(kmer2+margin-seqlen)))])
     kmer2pos<-kmerout$pos_interp[which(kmerout$tot_change_inter%in%kmer2)]
   }else if(kmer2-margin<1){
-    kmer2<-max(kmerout$tot_change_inter[which(kmerout$pos_interp %in% c(1:(kmer2+margin)))])
+    #kmer2<-max(kmerout$tot_change_inter[which(kmerout$pos_interp %in% c(1:(kmer2+margin)))])
+    kmer2<-max(kmerout$tot_change_inter[which(kmerout$pos_interp %in% c((seqlen+kmer2-margin):seqlen,1:(kmer2+margin)))])
     kmer2pos<-kmerout$pos_interp[which(kmerout$tot_change_inter %in% kmer2)]
   }else{
     kmer2<-max(kmerout$tot_change_inter[which(kmerout$pos_interp %in% c((kmer2-margin):(kmer2+margin)))])
