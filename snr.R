@@ -11,17 +11,20 @@ snr <- function(data, label, verb){
   
   datalength = length(data)
   windowlength = 100
+  if (datalength < windowlength){print("Too few datapoints in datatype for snr weighting.")}
+
   i = 1
   j = 1
   windowend = 0
   veclength = floor(datalength/windowlength)
+  
   skewvec.index <- numeric(veclength)
-  skewvec.mean <- numeric(veclength)
+  #skewvec.mean <- numeric(veclength)
   skewvec.std <- numeric(veclength)
   while (i < datalength - windowlength){
     windowend <- i + windowlength
     skewvec.index[j] <- j
-    skewvec.mean[j] <- mean(data[i:windowend])
+    #skewvec.mean[j] <- mean(data[i:windowend])
     skewvec.std[j] <- sd(data[i:windowend])
     i <- i + windowlength
     j <- j + 1

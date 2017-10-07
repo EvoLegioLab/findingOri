@@ -144,6 +144,7 @@ if (ter>ori){
 }
 if (verb){cat("done!\n")}
 cat('Based on gc, the origin is located at', ori ,' and the terminus at', ter,'\n')
+cat('Based on at, the origin is located at', taori ,' and the terminus at', tater,'\n')
 #-------------gc3-------------
 #Running gene prediction with prodigal and gc3 counts for 3rd codon positions
 if (verb){cat("Running gene prediction...\n")
@@ -185,6 +186,7 @@ if (gc3ter>gc3ori){
 }
 if (verb){cat("...3rd codon position calculations done!\n")}
 cat('Based on gc3, the origin is located at', gc3ori ,' and the terminus at', gc3ter, "\n")
+cat('Based on ta3, the origin is located at', ta3ori ,' and the terminus at', ta3ter, "\n")
 
 #---Counting genes------------------
 #Functions
@@ -251,7 +253,7 @@ cat('Based on gene bias, the origin is located at', geneori ,' and the terminus 
 if (verb){
   plot(cumgenebias$xpos, cumgenebias$cumgene, type='l',main='Cumulative gene bias over the whole chromosome',xlab='Position on chromosome',ylab='Cumulative gene count')
 }
-rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,ta=gccount$ta,ta3=gc3s$ta,cumgc=gccount$cumgc,cumgc3=gc3s$cumgc, cumta=gccount$cumta, cumta3=gc3s$cumta,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos,gcori=ori, gc3ori=gc3ori, gcter=ter, gc3ter=gc3ter, taori=taori, tater=tater, geneori=geneori, geneter=geneter)
+rawoutput<-list(gc=gccount$gc,gc3=gc3s$gc,ta=gccount$ta,ta3=gc3s$ta,cumgc=gccount$cumgc,cumgc3=gc3s$cumgc, cumta=gccount$cumta, cumta3=gc3s$cumta,gcxpos=gccount$xpos,gc3xpos=gc3s$xpos,genebias=cumgenebias$genes,genexpos=cumgenebias$xpos,gcori=ori, gc3ori=gc3ori, gcter=ter, gc3ter=gc3ter, taori=taori, ta3ori=ta3ori, tater=tater, ta3ter=ta3ter, geneori=geneori, geneter=geneter)
 #print(head(rawoutput))
 return(rawoutput)
 }
