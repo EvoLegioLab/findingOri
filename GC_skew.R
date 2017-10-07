@@ -144,7 +144,7 @@ if (ter>ori){
 }
 if (verb){cat("done!\n")}
 cat('Based on gc, the origin is located at', ori ,' and the terminus at', ter,'\n')
-cat('Based on at, the origin is located at', taori ,' and the terminus at', tater,'\n')
+cat('Based on ta, the origin is located at', taori ,' and the terminus at', tater,'\n')
 #-------------gc3-------------
 #Running gene prediction with prodigal and gc3 counts for 3rd codon positions
 if (verb){cat("Running gene prediction...\n")
